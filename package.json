@@ -4,6 +4,7 @@
   "description": "The simulation engine for the symians project",
   "main": "index.js",
   "scripts": {
+    "start": "node index",
     "test:cont": "mocha --watch --opts ./mocha.opts src/**/*.spec.js",
     "test": "mocha --opts ./mocha.opts src/**/*.spec.js",
     "lint": "eslint ./src/**/*.js; exit 0",
@@ -13,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "bluebird": "^2.10.2",
+    "eventemitter3": "^1.1.1",
     "express": "^4.13.3",
     "redis": "^2.2.3",
     "winston": "^1.1.0"

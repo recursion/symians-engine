@@ -1,35 +1,19 @@
 //import Promise from 'bluebird'
-import winston from 'winston'
-import db from '../config/db'
-import Zone from './zone'
+//import EventEmitter from 'eventEmitter3'
+//import Store from './store'
+import {loader} from 'symians-models'
 
-db.connect();
+// This will be the event emitter for all ingame objects
+//const emitter = new EventEmitter();
 
-let zone;
-Zone.find({})
-  .populate('locations')
-  .exec((err, zones)=>{
-    if(err){
-      winston.debug(err);
-    }
-    if (zones.length){
-      zone = zones[0];
-      winston.log('Found existing zone', zone);
-      start();
-    } else {
-      zone = new Zone({width: 256, height: 256});
-      genMap();
-    }
+// setup our store - this will listen for
+// update/change/save events and send them
+// to our long term storage.
+//const store = new Store(emitter);
+
+// load the zone or create a new one
+//let zone;
+loader.loadOrCreate()
+  .then((zone)=>{
+    //console.log(zone);
   });
-
-function genMap(){
-  zone.genMap()
-    .then(()=> {
-      winston.log('Generated map');
-      start();
-    });
-}
-
-function start(){
-  winston.log('Starting!');
-}
