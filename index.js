@@ -1,8 +1,2 @@
-import Zone from './src/zone'
-import Location from './src/location'
-
-export default {
-  Location: Location,
-  Zone: Zone
-};
-
+require('babel/register');
+require('./src/engine.js');

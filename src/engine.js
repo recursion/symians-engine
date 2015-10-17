@@ -1,4 +1,5 @@
-import Promise from 'bluebird'
+//import Promise from 'bluebird'
+import winston from 'winston'
 import db from '../config/db'
 import Zone from './zone'
 
@@ -9,11 +10,11 @@ Zone.find({})
   .populate('locations')
   .exec((err, zones)=>{
     if(err){
-      console.error(err);
+      winston.debug(err);
     }
     if (zones.length){
       zone = zones[0];
-      console.log('Found existing zone', zone);
+      winston.log('Found existing zone', zone);
       start();
     } else {
       zone = new Zone({width: 256, height: 256});
@@ -24,11 +25,11 @@ Zone.find({})
 function genMap(){
   zone.genMap()
     .then(()=> {
-      console.log('Generated map');
+      winston.log('Generated map');
       start();
     });
 }
 
 function start(){
-  console.log('Starting!');
+  winston.log('Starting!');
 }
