@@ -2,6 +2,7 @@
 const EVTMGR = Symbol('evtmgr');
 const ZONE = Symbol('zone');
 const STATE = Symbol('state');
+//const PARENT = Symbol('parent');
 const X = Symbol('x');
 const Y = Symbol('y');
 

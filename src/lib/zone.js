@@ -47,7 +47,8 @@ export default class Zone {
   createMap(type='grass'){
     for (let col = 0; col < this.width; col++){
       for (let row = 0; row < this.height; row++){
-        this.locations.push(new Location(type, col, row, this, this.emitter));
+        let loc = new Location(type, col, row, this, this.emitter);
+        this.locations.push(loc);
       }
     }
   }

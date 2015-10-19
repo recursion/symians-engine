@@ -1,2 +1,4 @@
 require('babel/register');
-require('./src/engine.js');
+var Engine = require('./src/engine.js');
+var e = new Engine();
+e.start();

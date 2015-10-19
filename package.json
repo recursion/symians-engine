@@ -1,13 +1,13 @@
 {
-  "name": "symians-sim-engin",
+  "name": "symians-engine",
   "version": "0.0.1",
   "description": "The simulation engine for the symians project",
   "main": "index.js",
   "scripts": {
     "start": "nodemon --watch src --exec npm run run",
     "run": "node index",
-    "test:cont": "mocha --watch --opts ./mocha.opts src/**/*.spec.js",
-    "test": "mocha --opts ./mocha.opts src/**/*.spec.js",
+    "test:cont": "mocha --watch --opts ./mocha.opts src",
+    "test": "mocha --opts ./mocha.opts src",
     "lint": "eslint ./src/**/*.js; exit 0",
     "pretest": "npm run lint"
   },
@@ -16,7 +16,6 @@
   "dependencies": {
     "bluebird": "^2.10.2",
     "eventemitter3": "^1.1.1",
-    "express": "^4.13.3",
     "redis": "^2.2.3",
     "winston": "^1.1.0"
   },

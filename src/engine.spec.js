@@ -1,6 +1,15 @@
 import sinon from 'sinon'
 import {expect} from 'chai'
 import Engine from './engine'
+import winston from 'winston'
+
+const options = {
+  silent: true
+  //timestamp: true,
+  //colorize: true
+};
+winston.remove(winston.transports.Console);
+winston.add(winston.transports.Console, options);
 
 let engine;
 describe('Engine', ()=>{
@@ -10,14 +19,19 @@ describe('Engine', ()=>{
   it('exists', ()=>{
     expect(engine).to.exist;
   });
-  it('creates a new zone if one is not specified at creation', ()=>{
+  it('creates a new zone if one is not specified at creation', (done)=>{
     const spy = sinon.spy(engine, 'create');
-    engine.init();
-    expect(spy.called).to.be.true;
+    engine.loadOrCreate();
+
+    setTimeout(()=>{
+      expect(spy.called).to.be.true;
+      expect(engine.zone.locations).to.have.length.above(0);
+      done();
+    }, 500);
   });
   it('attempts to load a zone if one is specified', ()=>{
     const spy = sinon.spy(engine, 'load');
-    engine.init(2);
+    engine.loadOrCreate(2);
     expect(spy.called).to.be.true;
   });
   describe('#start', ()=>{
@@ -63,6 +77,20 @@ describe('Engine', ()=>{
         done();
       });
     });
+  });
+  describe('hearbeat', ()=>{
+    it('emits a tick every X milliseconds', (done)=>{
+      let cb = (tick)=>{};
+      let spy = sinon.spy(cb);
+      engine.emitter.on('heartbeat', spy);
+      engine.start();
+      setTimeout(()=>{
+        expect(spy.called).to.equal(true);
+        done();
+      }, 100);
+
+    });
+
   });
 });
 

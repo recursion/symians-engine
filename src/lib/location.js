@@ -1,10 +1,9 @@
-import GObj from './gobj'
-
 // private
 const CONTENTS = Symbol('contents');
 const BLOCKED = Symbol('blocked');
 const ZONE = Symbol('zone');
 const TYPE = Symbol('type');
+const EVTMGR = Symbol('eventmanager');
 const X = Symbol('x');
 const Y = Symbol('y');
 
@@ -12,9 +11,9 @@ const Y = Symbol('y');
 /**
  * A location is the smallest map unit. Locations are containers for all other objects in the game. A 'tile' if you will. A game object must always be within/at a location.
  */
-export default class Location extends GObj {
-  constructor(type='grass', x=0, y=0, zone={}, emitter){
-    super('location', x, y, zone, emitter);
+export default class Location {
+  constructor(type=Location.types.GRASS, x=0, y=0, zone={}, emitter){
+    this[EVTMGR] = emitter;
     this[TYPE] = type;
     this[ZONE] = zone;
     this[BLOCKED] = false;
@@ -29,6 +28,7 @@ export default class Location extends GObj {
   get type(){
     return this[TYPE];
   }
+
   /**
    * getter for the locations x coord
    */
@@ -96,5 +96,15 @@ export default class Location extends GObj {
       }
       return this[CONTENTS].splice(idx, 1)[0];
     }
+  }
+  /**
+   * return an object with location type constants
+   */
+  static types(){
+    return {
+      GRASS: 'grass',
+      DIRT: 'dirt',
+      WATER: 'water'
+    };
   }
 }

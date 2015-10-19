@@ -70,5 +70,13 @@ describe('Location', ()=> {
       expect(test).to.equal(null);
     });
   });
+  describe('::types', ()=> {
+    it('returns an object with location type constants', ()=>{
+      expect(Location.types()).to.be.an('object');
+      expect(Location.types()).to.have.property('GRASS');
+      expect(Location.types()).to.have.property('WATER');
+      expect(Location.types()).to.have.property('DIRT');
+    });
+  });
 });
 

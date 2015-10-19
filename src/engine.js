@@ -3,34 +3,51 @@ import winston from 'winston'
 import EventEmitter from 'eventEmitter3'
 import Store from './store'
 //import {loader} from 'symians-models'
-import {Zone} from './lib/zone'
+import Zone from './lib/zone'
 
 const DEFAULT_ZONE_WIDTH = 256;
 const DEFAULT_ZONE_HEIGHT = 256;
 
-/*
+// configure the logger
+const options = {
+  timestamp: true,
+  colorize: true
+};
+winston.remove(winston.transports.Console);
+winston.add(winston.transports.Console, options);
+
+
+/**
  * zone engine
  * this drives all action inside of a zone
  * and emits changes/updates to state
  */
 export default class Engine{
+  /**
+   * the engine constructor
+   * @param {Number} id - the id of an existing zone
+   */
   constructor(id=0){
     this.emitter = new EventEmitter();
+    this.tick = 0;
     this.zone = null;
     this.loop = null;
     this.speed = 100;
     // pass the emitter to our storage component
-    Store(this.emitter);
-    this.init(id);
+    // Store(this.emitter);
+    this.loadOrCreate(id);
   }
 
   /**
    * start the engine
+   * initializes an interval that emits a 'heartbeat'
+   * which includes a single number representing the number
+   * of heartbeats that have been emitted.
    */
   start(){
     winston.info('Starting engine');
     this.loop = setInterval(()=>{
-      this.emitter.emit('heartbeat');
+      this.emitter.emit('heartbeat', this.tick++);
     }, this.speed);
   }
 
@@ -39,7 +56,7 @@ export default class Engine{
    * otherwise create a new one
    * @param {Number} - id
    */
-  init(id=0){
+  loadOrCreate(id=0){
     // if we were passed a zoneId, load it
     if(id){
       this.load(id);
@@ -62,11 +79,10 @@ export default class Engine{
    * create a new zone
    */
   create(width=DEFAULT_ZONE_WIDTH, height=DEFAULT_ZONE_HEIGHT, cb){
-    winston.info('Creating zone.');
-    this.zone = new Zone(width, height, this.emitter);
-
+    winston.info('Creating zone.', this.zone);
+    this.zone = new Zone(this.emitter, width, height);
+    this.zone.createMap();
     if(cb) cb();
-
   }
 
   /**
