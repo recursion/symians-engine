@@ -1,4 +1,5 @@
 import Location from './location'
+import winston from 'winston'
 
 /**
  * A zone is the largest chunk of a world that
@@ -13,9 +14,6 @@ export default class Zone {
    *@param {number} height - the total height of the zone
    */
   constructor(emitter, width=0, height=0){
-    if (!emitter){
-      throw new Error('Must have an event emitter!');
-    }
     this.emitter = emitter;
     this.width = width;
     this.height = height;
@@ -54,6 +52,34 @@ export default class Zone {
   }
 
   /**
+   * populate the map with some objects
+   * @param {Array} options - config the population
+   * options takes the format:
+   * [{type: <String>,
+   *   clusters: {
+   *     amount: <Number>
+   *     size: <Number>
+   *   }
+   *  }]
+   *  where each object in the array represents the
+   *  details of what type and size of cluster to create
+   */
+  populateMap(options){
+
+    options.forEach((obj)=>{
+      for (let i = 0; i < obj.clusters.amount; i++){
+        // create a random point within the range of the zone
+        let point = {
+          x: randy(0, this.width),
+          y: randy(0, this.height)
+        };
+        this.createCluster(obj.item, point, obj.clusters.size);
+      }
+    });
+
+  }
+
+  /**
    * create a cluster of items around a point in the zone
    * @param {GObj} item - the item to cluster
    * @param {Point} loc - the point to center the cluster around
@@ -66,15 +92,15 @@ export default class Zone {
     while(itemsPlaced < size){
       if(validateLocation(loc)) {
         // try to add an item to this location
-        if(this.getLocation(loc.x, loc.y).add(item)){
-          itemsPlaced++;
-        // if we cant, find a new spot
-        } else {
-          loc = finder(loc);
+        let location = this.getLocation(loc.x, loc.y);
+        if(location){
+          if(location.add(item)){
+            itemsPlaced++;
+            continue;
+          }
         }
       // look for a new location on invalid locations
-      } else {
-        loc = finder(loc);
+      loc = finder(loc);
       }
     }
   }
@@ -84,6 +110,14 @@ export default class Zone {
 /*******************************************
  *          HELPERS
  ******************************************/
+
+/**
+ * return a number between min and max exclusive
+ */
+function randy(min, max){
+  return Math.floor(Math.random() * (max - min) + min);
+}
+
 /**
  * validate coordinates are in bounds
  * and that the location is not blocked

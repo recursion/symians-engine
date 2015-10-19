@@ -1,7 +1,10 @@
+import winston from 'winston'
+
 /**      PRIVATE CONSTANTS  **/
 const EVTMGR = Symbol('evtmgr');
 const ZONE = Symbol('zone');
 const STATE = Symbol('state');
+const TYPE = Symbol('type');
 //const PARENT = Symbol('parent');
 const X = Symbol('x');
 const Y = Symbol('y');
@@ -17,13 +20,14 @@ export default class GObj {
    * @param {Zone} zone - a reference to the objects zone
    * @param {EventEmitter} the simulations event emitter
    */
-  constructor(type, x=0, y=0, zone={}, emitter){
+  constructor(type='none', x=0, y=0, zone={}, emitter){
     if (!emitter){
       throw new Error('Must have an emitter!');
     }
     this[X] = x;
     this[Y] = y;
 
+    this[TYPE] = type;
     this[STATE] = null;
     this[ZONE] = zone;
     this[EVTMGR] = emitter;
@@ -31,6 +35,9 @@ export default class GObj {
 
     //TODO Fix this hardcoded value
     this[EVTMGR].emit('create', type, this);
+
+    // log it
+    winston.info(`created object: ${this}`);
   }
 
   /**

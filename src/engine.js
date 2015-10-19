@@ -1,7 +1,7 @@
 //import Promise from 'bluebird'
 import winston from 'winston'
 import EventEmitter from 'eventEmitter3'
-import Store from './store'
+//import Store from './store'
 //import {loader} from 'symians-models'
 import Zone from './lib/zone'
 
@@ -13,8 +13,17 @@ const options = {
   timestamp: true,
   colorize: true
 };
+const fileOptions = {
+  timestamp: true,
+  filename: './engine.log',
+  colorize: true
+};
 winston.remove(winston.transports.Console);
+try{
+  winston.remove(winston.transports.File);
+}catch(e){}
 winston.add(winston.transports.Console, options);
+winston.add(winston.transports.File, fileOptions);
 
 
 /**
@@ -27,10 +36,13 @@ export default class Engine{
    * the engine constructor
    * @param {Number} id - the id of an existing zone
    */
-  constructor(id=0){
+  constructor(id=0, width=DEFAULT_ZONE_WIDTH, height=DEFAULT_ZONE_HEIGHT){
     this.emitter = new EventEmitter();
     this.tick = 0;
-    this.zone = null;
+    this.zone = {
+      width: width,
+      height: height
+    };
     this.loop = null;
     this.speed = 100;
     // pass the emitter to our storage component
@@ -78,11 +90,10 @@ export default class Engine{
   /**
    * create a new zone
    */
-  create(width=DEFAULT_ZONE_WIDTH, height=DEFAULT_ZONE_HEIGHT, cb){
+  create(){
     winston.info('Creating zone.', this.zone);
-    this.zone = new Zone(this.emitter, width, height);
+    this.zone = new Zone(this.emitter, this.zone.width, this.zone.height);
     this.zone.createMap();
-    if(cb) cb();
   }
 
   /**

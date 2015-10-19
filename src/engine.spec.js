@@ -14,7 +14,7 @@ winston.add(winston.transports.Console, options);
 let engine;
 describe('Engine', ()=>{
   beforeEach(()=>{
-    engine = new Engine();
+    engine = new Engine(0, 10, 10);
   });
   it('exists', ()=>{
     expect(engine).to.exist;
@@ -71,16 +71,13 @@ describe('Engine', ()=>{
     });
   });
   describe('#create', ()=>{
-    it('creates a new zone', (done)=>{
-      engine.create(5, 5, ()=>{
-        expect(engine.zone).to.exist;
-        done();
-      });
+    it('creates a new zone', ()=>{
+      engine.create();
     });
   });
   describe('hearbeat', ()=>{
     it('emits a tick every X milliseconds', (done)=>{
-      let cb = (tick)=>{};
+      let cb = ()=>{};
       let spy = sinon.spy(cb);
       engine.emitter.on('heartbeat', spy);
       engine.start();
