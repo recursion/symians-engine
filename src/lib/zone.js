@@ -54,11 +54,11 @@ export default class Zone {
   /**
    * populate the map with some objects
    * @param {Array} options - config the population
-   * options takes the format:
-   * [{type: <String>,
+   * the objects in the array take the format:
+   * [{type: <String>,    // the type of item to create
    *   clusters: {
-   *     amount: <Number>
-   *     size: <Number>
+   *     amount: <Number> // the number of clusters to create
+   *     size: <Number>   // the size of each cluster
    *   }
    *  }]
    *  where each object in the array represents the
@@ -88,18 +88,22 @@ export default class Zone {
   createCluster(item, loc, size){
 
     let itemsPlaced = 0;
+    // create our function to find nearby locations
     const finder = findNextLoc();
+
+    // do until we have fullfilled the request
     while(itemsPlaced < size){
-      if(validateLocation(loc)) {
-        // try to add an item to this location
-        let location = this.getLocation(loc.x, loc.y);
-        if(location){
-          if(location.add(item)){
-            itemsPlaced++;
-            continue;
-          }
+      // try to add an item to this location
+      let location = this.getLocation(loc.x, loc.y);
+      if(location && !location.isBlocked){
+        // if we are able to place the item
+        if(location.add(item)){
+          itemsPlaced++;
+          continue;
         }
-      // look for a new location on invalid locations
+
+      // we werent able to place
+      // look for a new location
       loc = finder(loc);
       }
     }
@@ -119,30 +123,25 @@ function randy(min, max){
 }
 
 /**
- * validate coordinates are in bounds
- * and that the location is not blocked
- * @param {Point} loc - the location to validate
- * @returns {Boolean}
- */
-function validateLocation(loc){
-  if (loc) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-/**
- * keep track of the last move we made
- * and make the next accordingly
+ * return a memoized function that moves
+ * the x/y coordinate of a location/point by 1
+ * each time it is called. The pattern created by
+ * the series of calls will become an outward spiraling square.
+ * moving right, down, left, up and increasing step as needed
  */
 function findNextLoc(){
   let lastDir = 0;
   let moves = 1;
-  return (l)=>{
-    let loc = l;
+  /**
+   * takes a location and finds the next location
+   * in its sequence of square making.
+   * @param {Point} l - an object with x, y coords.
+   * @return {Point} a point with x, y coords.
+   */
+  return (location)=>{
+    // make a copy of the object passed in
+    let loc = Object.assign({}, location);
     switch(lastDir){
-
       case 0:
         loc.x += moves;
         lastDir++;
