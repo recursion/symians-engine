@@ -3,7 +3,7 @@ import winston from 'winston'
 import EventEmitter from 'eventEmitter3'
 //import Store from './store'
 //import {loader} from 'symians-models'
-import Zone from './lib/zone'
+import Zone from './lib/world/zone'
 
 const DEFAULT_ZONE_WIDTH = 256;
 const DEFAULT_ZONE_HEIGHT = 256;
@@ -35,14 +35,22 @@ export default class Engine{
   /**
    * the engine constructor
    * @param {Number} id - the id of an existing zone
+   * @param {Number} width - the width of the zone (if creating on)
+   * @param {Number} height - the width of the zone (if creating on)
    */
   constructor(id=0, width=DEFAULT_ZONE_WIDTH, height=DEFAULT_ZONE_HEIGHT){
     this.emitter = new EventEmitter();
     this.tick = 0;
+
+    // seed width and height data abou the zone
+    // incase we are creating one.
     this.zone = {
       width: width,
       height: height
     };
+
+
+    // keep a reference to the game loop
     this.loop = null;
     this.speed = 100;
     // pass the emitter to our storage component
@@ -94,6 +102,7 @@ export default class Engine{
     winston.info('Creating zone.', this.zone);
     this.zone = new Zone(this.emitter, this.zone.width, this.zone.height);
     this.zone.createMap();
+    winston.info(`Created map with: ${this.zone.locations.length} locations.`);
   }
 
   /**

@@ -55,7 +55,7 @@ describe('Zone', ()=> {
 
     });
 
-    it('can take multiple items configs to populate map with', ()=>{
+    it('can take multiple item configs to populate map with', ()=>{
 
       const options = [{
         item: 'tree',
