@@ -1,15 +1,15 @@
 //import sinon from 'sinon'
 import {expect} from 'chai'
 
-import Positionable from './behaviors/positionable'
-import Movable from './behaviors/movable'
+import Position from './traits/position'
+import Direction from './traits/direction'
 
 let test;
 describe('Compositing', ()=> {
   beforeEach(()=>{
     test = {
-      position: new Positionable(1, 1),
-      direction: new Movable()
+      position: new Position(1, 1),
+      direction: new Direction()
     };
   });
   it('has a position', ()=>{
@@ -25,14 +25,14 @@ describe('Compositing', ()=> {
   });
   it('has a direction', ()=>{
     expect(test).to.have.property('direction');
-    expect(test.direction).to.have.property('dx');
-    expect(test.direction).to.have.property('dy');
+    expect(test.direction).to.have.property('x');
+    expect(test.direction).to.have.property('y');
   });
   it('can have its direction changed', ()=>{
-    test.direction.dx = 4;
-    expect(test.direction.dx).to.equal(4);
-    test.direction.dy = 4;
-    expect(test.direction.dy).to.equal(4);
+    test.direction.x = 4;
+    expect(test.direction.x).to.equal(4);
+    test.direction.y = 4;
+    expect(test.direction.y).to.equal(4);
   });
 });
 

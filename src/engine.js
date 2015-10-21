@@ -1,9 +1,10 @@
 //import Promise from 'bluebird'
 import winston from 'winston'
 import EventEmitter from 'eventEmitter3'
+
 //import Store from './store'
 //import {loader} from 'symians-models'
-import Zone from './lib/world/zone'
+import Zone from './components/world/zone'
 
 const DEFAULT_ZONE_WIDTH = 256;
 const DEFAULT_ZONE_HEIGHT = 256;
@@ -18,6 +19,7 @@ const fileOptions = {
   filename: './engine.log',
   colorize: true
 };
+
 winston.remove(winston.transports.Console);
 try{
   winston.remove(winston.transports.File);
