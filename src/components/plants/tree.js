@@ -1,7 +1,10 @@
 import GObj from '../core/gobj'
 //import winston from 'winston'
+import Trait from '../core/trait'
+import Growable from '../behaviors/growable'
 
 const SIZE = Symbol('size');
+const GROWABLE = Symbol('growable');
 
 /**
  * basic living/growing/edible grass
@@ -16,23 +19,21 @@ export default class Tree extends GObj {
    */
   constructor(...args){
     super(...args);
-    this[SIZE] = 1;
+    this[SIZE] = new Trait(0);
+    this[GROWABLE] = new Growable(this[SIZE]);
   }
 
-  cut(){
-
+  get size(){
+    return this[SIZE];
   }
 
   update(time){
-    if(time % 5 === 0){
-      this[SIZE]++;
-    }
+
+    this[GROWABLE].grow(time);
+
     if(time % 10 === 0){
       // try to reproduce?
     }
   }
 
-  //update
-    // state
-    // state.act()
 }
