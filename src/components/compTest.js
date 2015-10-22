@@ -1,8 +1,8 @@
 //import sinon from 'sinon'
 import {expect} from 'chai'
 
-import Position from './traits/position'
-import Direction from './traits/direction'
+import Position from './core/position'
+import Direction from './mobs/direction'
 
 let test;
 describe('Compositing', ()=> {

@@ -16,6 +16,9 @@ describe('Engine', ()=>{
   beforeEach(()=>{
     engine = new Engine(0, 10, 10);
   });
+  afterEach(()=>{
+    engine.stop();
+  });
   it('exists', ()=>{
     expect(engine).to.exist;
   });

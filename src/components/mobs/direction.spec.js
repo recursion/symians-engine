@@ -3,8 +3,8 @@ import {expect} from 'chai'
 
 const position = {x: 1, y: 1};
 
-let direction, bounds;
-describe('Movable', ()=> {
+let direction;
+describe('Direction', ()=> {
   beforeEach(()=>{
     direction = new Direction(position);
   });
@@ -24,7 +24,11 @@ describe('Movable', ()=> {
 
   describe('#move', ()=>{
     it('changes its position by its directional vectors (DX, DY)', ()=>{
-      expect(direction);
+      direction.x = 1;
+      direction.y = -1;
+      direction.move();
+      expect(position.x).to.equal(2);
+      expect(position.y).to.equal(0);
     });
   });
 });

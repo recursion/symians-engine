@@ -4,6 +4,8 @@ import EventEmitter from 'eventEmitter3'
 
 //import Store from './store'
 //import {loader} from 'symians-models'
+import Grass from './components/plants/grass'
+import Tree from './components/plants/tree'
 import Zone from './components/world/zone'
 
 const DEFAULT_ZONE_WIDTH = 256;
@@ -104,7 +106,23 @@ export default class Engine{
     winston.info('Creating zone.', this.zone);
     this.zone = new Zone(this.emitter, this.zone.width, this.zone.height);
     this.zone.createMap();
-    winston.info(`Created map with: ${this.zone.locations.length} locations.`);
+    //this.zone.populateMap();
+    const options = [{
+      item: Tree,
+      clusters: {
+        amount: 5,
+        size: 15
+      }
+    },{
+      item: Grass,
+      clusters: {
+        amount: 15,
+        size: 20
+      }
+    }];
+
+    this.zone.populateMap(options);
+
   }
 
   /**

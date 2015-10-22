@@ -5,23 +5,20 @@ import {expect} from 'chai'
 
 const EM = new EventEmitter();
 
-const mockZone = {
-  width: 20,
-  height: 20
-};
-
 let mob;
 describe('Mob', ()=> {
   beforeEach(()=>{
-    mob = new Mob(1, 1, mockZone, EM);
+    mob = new Mob(1, 1, EM);
   });
   it('has an x and y property', ()=> {
-    expect(mob).to.have.property('x');
-    expect(mob).to.have.property('y');
+    expect(mob).to.have.property('position');
+    expect(mob.position).to.have.property('x');
+    expect(mob.position).to.have.property('y');
   });
-  it('has a dx and dy property', ()=> {
-    expect(mob).to.have.property('dx');
-    expect(mob).to.have.property('dy');
+  it('has a direction x and direction y property', ()=> {
+    expect(mob).to.have.property('direction');
+    expect(mob.position).to.have.property('x');
+    expect(mob.position).to.have.property('y');
   });
   describe('#on', ()=>{
     it('is a wrapper for the systems event emitter', ()=>{
@@ -40,17 +37,6 @@ describe('Mob', ()=> {
 
       mob.emit()
       expect(spy.called).to.equal(true);
-    });
-  });
-
-  describe('#update', ()=>{
-    it('is called when "heartbeat" is emitted (by the engine)', (done)=>{
-      let spy = sinon.spy(mob, 'update');
-      EM.emit('heartbeat');
-      setTimeout(()=>{
-        expect(mob).to.have.property('update').is.a('function');
-        done();
-      }, 10);
     });
   });
 

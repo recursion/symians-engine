@@ -45,17 +45,18 @@ export default class Zone {
   createMap(type='grass'){
     for (let col = 0; col < this.width; col++){
       for (let row = 0; row < this.height; row++){
-        let loc = new Location(type, col, row, this, this.emitter);
+        let loc = new Location(type, col, row, this.emitter);
         this.locations.push(loc);
       }
     }
+    winston.info(`Created map with: ${this.width * this.height} locations.`);
   }
 
   /**
    * populate the map with some objects
    * @param {Array} options - config the population
    * the objects in the array take the format:
-   * [{type: <String>,    // the type of item to create
+   * [{type: <GObj>,    // the type of item to create
    *   clusters: {
    *     amount: <Number> // the number of clusters to create
    *     size: <Number>   // the size of each cluster
@@ -66,6 +67,7 @@ export default class Zone {
    */
   populateMap(options){
 
+    let objName;
     options.forEach((obj)=>{
       for (let i = 0; i < obj.clusters.amount; i++){
         // create a random point within the range of the zone
@@ -73,8 +75,9 @@ export default class Zone {
           x: randy(0, this.width),
           y: randy(0, this.height)
         };
-        this.createCluster(obj.item, point, obj.clusters.size);
+        objName = this.createCluster(obj.item, point, obj.clusters.size);
       }
+      winston.info(`Added ${obj.clusters.amount} clusters of ${obj.clusters.size} ${objName}`);
     });
 
   }
@@ -87,6 +90,7 @@ export default class Zone {
    */
   createCluster(item, loc, size){
 
+    let itemName;
     let itemsPlaced = 0;
     // create our function to find nearby locations
     const finder = findNextLoc();
@@ -97,7 +101,12 @@ export default class Zone {
       let location = this.getLocation(loc.x, loc.y);
       if(location && !location.isBlocked){
         // if we are able to place the item
-        if(location.add(item)){
+
+        // get the constructor name of the item we are making
+        let it = new item(loc.x, loc.y, this.emitter);
+        itemName = it.constructor.name;
+
+        if(location.add(it)){
           itemsPlaced++;
           continue;
         }
@@ -107,6 +116,9 @@ export default class Zone {
       loc = finder(loc);
       }
     }
+    // hand the item name back to whoever called us
+    // so they know what we actually made
+    return itemName;
   }
 }
 

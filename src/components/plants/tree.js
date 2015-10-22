@@ -1,11 +1,12 @@
 import GObj from '../core/gobj'
 //import winston from 'winston'
-import Direction from './direction'
+
+const SIZE = Symbol('size');
 
 /**
- * basic mobile object
+ * basic living/growing/edible grass
  */
-export default class Mob extends GObj {
+export default class Tree extends GObj {
   /**
    * Mob constructor
    * @param {Number} x - x coordinate
@@ -15,17 +16,23 @@ export default class Mob extends GObj {
    */
   constructor(...args){
     super(...args);
-    this.direction = new Direction();
+    this[SIZE] = 1;
+  }
+
+  cut(){
+
+  }
+
+  update(time){
+    if(time % 5 === 0){
+      this[SIZE]++;
+    }
+    if(time % 10 === 0){
+      // try to reproduce?
+    }
   }
 
   //update
     // state
     // state.act()
 }
-
-/*
-function move(obj, dir){
-  obj.direction.move(dir);
-  obj.emit('move', obj);
-}
-*/

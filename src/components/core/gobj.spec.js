@@ -5,21 +5,16 @@ import EventEmitter from 'eventEmitter3'
 
 const EM = new EventEmitter();
 
-const mockZone = {
-  width: 10,
-  height: 10
-};
-
 let gobj;
 describe('GObj - The base class - all "in world" objects derive from this object', ()=> {
   beforeEach(()=>{
-    gobj = new Gobj(1, 1, mockZone, EM);
+    gobj = new Gobj(1, 1, EM);
   });
 
   it('throws an error if a valid event emitter is not passed in at instantiation', ()=> {
     let err = null;
     try{
-      let x = new Gobj('fail', 1, 1, mockZone, 'failcake');
+      new Gobj('fail', 1, 1, 'failcake');
     }catch(e){
       err = e;
     }
@@ -46,25 +41,21 @@ describe('GObj - The base class - all "in world" objects derive from this object
     });
   });
 
-  describe('#update', ()=>{
-    it('is called when "heartbeat" is emitted (by the engine)', (done)=>{
-      let spy = sinon.spy(gobj, 'update');
-      EM.emit('heartbeat');
-      setTimeout(()=>{
-        expect(gobj).to.have.property('update').is.a('function');
-        done();
-      }, 10);
+  describe('position', ()=>{
+    it('an object with an x and y property', ()=>{
+      expect(gobj).to.have.property('position');
+      expect(gobj.position).to.have.property('x');
+      expect(gobj.position).to.have.property('y');
     });
   });
 
-  describe('x and y coordinates', ()=>{
-    it('Cannot set coords out of zone bounds', ()=>{
-      const xg = gobj.x;
-      gobj.x = 123;
-      expect(gobj.x).to.equal(xg);
-      const yg = gobj.y;
-      gobj.y = 123;
-      expect(gobj.y).to.equal(yg);
+  describe('#update', ()=>{
+    it('is called when "heartbeat" is emitted (by the engine)', (done)=>{
+      EM.emit('heartbeat', Date.now());
+      setTimeout(()=>{
+        expect(gobj.age).to.be.above(0);
+        done();
+      }, 100);
     });
   });
 });

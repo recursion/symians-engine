@@ -4,6 +4,10 @@ import {expect} from 'chai'
 
 const EM = new EventEmitter();
 
+class testObj {
+
+}
+
 let z;
 describe('Zone', ()=> {
   beforeEach(()=>{
@@ -40,7 +44,7 @@ describe('Zone', ()=> {
       expect(count).to.equal(0);
 
       const options = [{
-        item: 'tree',
+        item: testObj,
         clusters: {
           amount: 3,
           size: 8
@@ -58,13 +62,13 @@ describe('Zone', ()=> {
     it('can take multiple item configs to populate map with', ()=>{
 
       const options = [{
-        item: 'tree',
+        item: testObj,
         clusters: {
           amount: 3,
           size: 8
         }
       }, {
-        item: 'rock',
+        item: testObj,
         clusters: {
           amount: 5,
           size: 2
@@ -93,7 +97,7 @@ describe('Zone', ()=> {
       const startPoint = {x: 5, y: 5};
       let counter = countItems(z);
       expect(counter).to.equal(0);
-      z.createCluster('tree', startPoint, 5);
+      z.createCluster(testObj, startPoint, 5);
       counter = countItems(z);
       expect(counter).to.equal(5);
     });
@@ -101,7 +105,7 @@ describe('Zone', ()=> {
       const startPoint = {x: 1, y: 1};
       let counter = countItems(z);
       expect(counter).to.equal(0);
-      z.createCluster('tree', startPoint, 5);
+      z.createCluster(testObj, startPoint, 5);
       counter = countItems(z);
       expect(counter).to.equal(5);
     });

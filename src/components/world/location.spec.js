@@ -7,7 +7,7 @@ const EM = new EventEmitter();
 let location;
 describe('Location', ()=> {
   beforeEach(()=>{
-    location = new Location('grass', 1, 1, {}, EM);
+    location = new Location('grass', 1, 1, EM);
   });
   it('creates an object with reasonable defaults', ()=> {
     expect(location).to.have.property('type', 'grass');

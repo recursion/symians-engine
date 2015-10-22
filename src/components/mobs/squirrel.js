@@ -1,11 +1,12 @@
 import GObj from '../core/gobj'
 //import winston from 'winston'
 import Direction from './direction'
+import Trait from '../core/trait'
 
 /**
  * basic mobile object
  */
-export default class Mob extends GObj {
+export default class Squirrel extends GObj {
   /**
    * Mob constructor
    * @param {Number} x - x coordinate
@@ -16,16 +17,14 @@ export default class Mob extends GObj {
   constructor(...args){
     super(...args);
     this.direction = new Direction();
+    this.health = new Trait();
+    this.hunger = new Trait();
+    this.fatigue = new Trait();
   }
 
-  //update
-    // state
-    // state.act()
+  update(time){
+    // check health
+    // check hunger
+    // check fatigue
+  }
 }
-
-/*
-function move(obj, dir){
-  obj.direction.move(dir);
-  obj.emit('move', obj);
-}
-*/
