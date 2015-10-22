@@ -14,7 +14,7 @@ winston.add(winston.transports.Console, options);
 let engine;
 describe('Engine', ()=>{
   beforeEach(()=>{
-    engine = new Engine(0, 10, 10);
+    engine = new Engine(0, 10, 10, false);
   });
   afterEach(()=>{
     engine.stop();
@@ -30,7 +30,7 @@ describe('Engine', ()=>{
       expect(spy.called).to.be.true;
       expect(engine.zone.locations).to.have.length.above(0);
       done();
-    }, 500);
+    }, 250);
   });
   it('attempts to load a zone if one is specified', ()=>{
     const spy = sinon.spy(engine, 'load');
@@ -50,7 +50,7 @@ describe('Engine', ()=>{
       setTimeout(()=>{
         expect(spy.called).to.equal(true);
         done();
-      }, 200);
+      }, 250);
     });
   });
   describe('#stop', ()=>{

@@ -1,11 +1,6 @@
 import GObj from '../core/gobj'
 
-// private
-const CONTENTS = Symbol('contents');
-const BLOCKED = Symbol('blocked');
-const TYPE = Symbol('type');
-
-
+const privates = new WeakMap();
 
 /**
  * A location is the smallest map unit. Locations are containers for all other objects in the game. A 'tile' if you will. A game object must always be within/at a location.
@@ -14,9 +9,12 @@ const TYPE = Symbol('type');
 export default class Location extends GObj {
   constructor(type, ...rest){
     super(...rest);
-    this[BLOCKED] = false;
-    this[TYPE] = type;
-    this[CONTENTS] = [];
+    const priv = {
+      blocked: false,
+      type: type,
+      contents: []
+    };
+    privates.set(this, priv);
   }
 
   /**
@@ -27,7 +25,8 @@ export default class Location extends GObj {
   get isBlocked(){
     // check the object at the top of the
     // contents stack and see if it blocks
-    return this[BLOCKED];
+    const blocked = privates.get(this).blocked;
+    return blocked;
   }
 
   /**
@@ -35,11 +34,12 @@ export default class Location extends GObj {
    * the list of items on/at this location
    */
   get contents(){
-    return this[CONTENTS].slice();
+    const contents = privates.get(this).contents;
+    return contents.slice();
   }
 
   get type(){
-    return this[TYPE];
+    return privates.get(this).type;
   }
 
   /**
@@ -49,13 +49,13 @@ export default class Location extends GObj {
    */
   add(obj){
     if(obj.blocks){
-      this[BLOCKED] = true;
+      privates.get(this).blocked = true;
     }
 
     // validate this addition
       // return false if not valid
 
-    this[CONTENTS].push(obj);
+    privates.get(this).contents.push(obj);
     return true;
     // emit an event ?
   }
@@ -65,17 +65,27 @@ export default class Location extends GObj {
    * @return {GObj}
    */
   remove(obj){
-    const idx = this[CONTENTS].indexOf(obj);
+    const idx = privates.get(this).contents.indexOf(obj);
     if (idx === -1){
       return null;
     }
     else {
       if(obj.blocks){
-        this[BLOCKED] = false;
+        privates.get(this).blocked = false;
       }
-      return this[CONTENTS].splice(idx, 1)[0];
+      return privates.get(this).contents.splice(idx, 1)[0];
     }
   }
+
+  toString(){
+    const obj = {
+      type: privates.get(this).type,
+      isBlocked: this.isBlocked,
+      contents: this.contents
+    };
+    return obj;
+  }
+
   /**
    * return an object with location type constants
    */

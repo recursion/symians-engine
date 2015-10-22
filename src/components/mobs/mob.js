@@ -2,6 +2,8 @@ import GObj from '../core/gobj'
 //import winston from 'winston'
 import Direction from './direction'
 
+const privates = new WeakMap();
+
 /**
  * basic mobile object
  */
@@ -15,12 +17,25 @@ export default class Mob extends GObj {
    */
   constructor(...args){
     super(...args);
-    this.direction = new Direction();
+    const priv = {
+      direction: new Direction()
+    };
+
+    privates.set(this, priv);
+
   }
 
-  //update
-    // state
-    // state.act()
+  get direction(){
+    const d = privates.get(this).direction;
+    return [d.x, d.y];
+  }
+
+  toString(){
+    let str = super.toString();
+    str = str.slice(0, -1);
+    str += `, Direction: x: ${this.direction[0]}, y: ${this.direction[0]}}`;
+    return str;
+  }
 }
 
 /*

@@ -2,10 +2,7 @@ import winston from 'winston'
 import Position from './position'
 import EventEmitter from 'eventemitter3'
 
-/**   PRIVATE CONSTANTS  **/
-const EVTMGR = Symbol('evtmgr');
-const POSITION = Symbol('position');
-const AGE = Symbol('age');
+const privates = new WeakMap();
 
 /**
  * base class for all other game items.
@@ -21,19 +18,24 @@ export default class GObj {
       throw new Error('emitter must be an instance of eventemitter3!');
     }
 
-    // all gobjects have a position
-    this[POSITION] = new Position(x, y);
-    this[AGE] = 0;
+    const privs = {
+      position: new Position(x, y),
+      age: 0,
+      emitter: emitter
+    };
 
-    this[EVTMGR] = emitter;
-    this[EVTMGR].on('heartbeat', this.update.bind(this));
+    // all gobjects have a position
+    privates.set(this, privs);
+    privates.set(this, privs);
+    privates.set(this, privs);
+    emitter.on('heartbeat', this.update.bind(this));
 
     /**
      * Emit a creation event
      * (except for locations)
      **/
     if(this.constructor.name !== 'location'){
-      this[EVTMGR].emit('create', this.constructor.name, this);
+      emitter.emit('create', this.constructor.name, this);
       //winston.info(`created object: ${this}`);
     }
   }
@@ -43,22 +45,25 @@ export default class GObj {
    * @returns {Position}
    */
   get position(){
-    return {x: this[POSITION].x, y: this[POSITION].y};
+    let position = privates.get(this).position;
+    return {x: position.x, y: position.y};
   }
 
   /* wrap event emitter on */
   on(...args){
-    this[EVTMGR].on(...args);
+    let emitter = privates.get(this).emitter;
+    emitter.on(...args);
   }
 
   /* wrap event emitter emit */
   emit(...args){
-    this[EVTMGR].emit(...args);
+    let emitter = privates.get(this).emitter;
+    emitter.emit(...args);
   }
 
-
   get age(){
-    return this[AGE];
+    const age = privates.get(this).age;
+    return age;
   }
 
   /**
@@ -66,18 +71,14 @@ export default class GObj {
    * @param {Number} - The simulation world time
    */
   update(time){
-
-    this[AGE]++;
-
-    //winston.info(time);
-
+    privates.get(this).age++
   }
 
   /**
    * toString override
    */
   toString(){
-    return `${this.constructor.name} {x: ${this[POSITION].x}, y: ${this[POSITION].y}}`;
+    return `${this.constructor.name} {x: ${this.position.x}, y: ${this.position.y}, age: ${this.age}}`;
   }
 }
 

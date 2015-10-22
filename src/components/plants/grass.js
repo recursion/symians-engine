@@ -3,8 +3,8 @@ import GObj from '../core/gobj'
 import Trait from '../core/trait'
 import Growable from '../behaviors/growable'
 
-const SIZE = Symbol('size');
-const GROWABLE = Symbol('growable');
+const privates = new WeakMap();
+const size = new Trait(0);
 
 /**
  * basic living/growing/edible grass
@@ -19,21 +19,40 @@ export default class Grass extends GObj {
    */
   constructor(...args){
     super(...args);
-    this[SIZE] = new Trait(0);
-    this[GROWABLE] = new Growable(this[SIZE]);
+    const privs = {
+      size: size,
+      blocks: true,
+      growable: new Growable(size)
+    };
+    privates.set(this, privs);
   }
 
+  get blocks(){
+    return privates.get(this).blocks;
+  }
+
+  /**
+   * returns the plants current size
+   */
   get size(){
-    return this[SIZE];
+    return privates.get(this).size.value;
   }
 
+  /**
+   * called on sim heartbeat.
+   */
   update(time){
-
-    this[GROWABLE].grow(time);
-
+    privates.get(this).growable.grow(time);
     if(time % 10 === 0){
       // try to reproduce?
     }
+  }
+
+  toString(){
+    let str = super.toString();
+    str = str.slice(0, -1);
+    str += `, Size: ${this.size}}`;
+    return str;
   }
 
 }

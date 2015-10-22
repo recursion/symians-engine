@@ -1,6 +1,8 @@
 import Location from './location'
 import winston from 'winston'
 
+const privates = new WeakMap();
+
 /**
  * A zone is the largest chunk of a world that
  * can be 'subscribed' to at a time. It is very
@@ -14,7 +16,12 @@ export default class Zone {
    *@param {number} height - the total height of the zone
    */
   constructor(emitter, width=0, height=0){
-    this.emitter = emitter;
+    const priv = {
+      emitter: emitter
+    };
+    privates.set(this, priv);
+
+    //this.emitter = emitter;
     this.width = width;
     this.height = height;
     this.locations = [];
@@ -45,7 +52,7 @@ export default class Zone {
   createMap(type='grass'){
     for (let col = 0; col < this.width; col++){
       for (let row = 0; row < this.height; row++){
-        let loc = new Location(type, col, row, this.emitter);
+        let loc = new Location(type, col, row, privates.get(this).emitter);
         this.locations.push(loc);
       }
     }
@@ -99,27 +106,43 @@ export default class Zone {
     while(itemsPlaced < size){
       // try to add an item to this location
       let location = this.getLocation(loc.x, loc.y);
-      if(location && !location.isBlocked){
+      if(location){
         // if we are able to place the item
+        if (!location.isBlocked){
+          // get the constructor name of the item we are making
+          let it = new item(loc.x, loc.y, privates.get(this).emitter);
+          itemName = it.constructor.name;
 
-        // get the constructor name of the item we are making
-        let it = new item(loc.x, loc.y, this.emitter);
-        itemName = it.constructor.name;
-
-        if(location.add(it)){
-          itemsPlaced++;
-          continue;
+          if(location.add(it)){
+            itemsPlaced++;
+            continue;
+          }
         }
-
-      // we werent able to place
-      // look for a new location
-      loc = finder(loc);
+        // we werent able to place
+        // look for a new location
+        loc = finder(loc);
+      } else {
+        loc = finder(loc);
       }
+
     }
     // hand the item name back to whoever called us
     // so they know what we actually made
     return itemName;
   }
+  toString(){
+    let locs = [];
+    this.locations.forEach((loc)=>{
+      locs.push(loc.toString());
+    });
+    const str = {
+      width: this.width,
+      height: this.height,
+      locations: locs
+    };
+    return JSON.stringify(str);
+  }
+
 }
 
 

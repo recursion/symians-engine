@@ -1,4 +1,3 @@
-/*
 import Promise from 'bluebird'
 import winston from 'winston'
 import redis from 'redis'
@@ -7,12 +6,16 @@ const client = redis.createClient();
 Promise.promisifyAll(redis.RedisClient.prototype);
 
 export default function(emitter){
-
-  emitter.on('create', create);
-  emitter.on('save', save);
+  //emitter.on('create', create);
+  //emitter.on('save', save);
+  emitter.on('zoneCreated', zoneCreated);
 }
 
-function create(obj, type="mob", zoneId){
+function zoneCreated(zone){
+  client.publish('zoneCreated', zone);
+}
+
+function create(obj, type='mob', zoneId){
 
   winston.info('Creating: ', type, obj);
   // construct the iterator
@@ -48,10 +51,8 @@ function save(obj){
       console.log(object);
       client.hmset(obj.key, obj);
     });
-    */
+  */
   // set its new data
   client.hmset(obj.key, obj);
   client.publish('update', JSON.stringify(obj));
 }
-
-*/

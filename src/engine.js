@@ -3,6 +3,7 @@ import winston from 'winston'
 import EventEmitter from 'eventEmitter3'
 
 //import Store from './store'
+
 //import {loader} from 'symians-models'
 import Grass from './components/plants/grass'
 import Tree from './components/plants/tree'
@@ -16,6 +17,7 @@ const options = {
   timestamp: true,
   colorize: true
 };
+
 const fileOptions = {
   timestamp: true,
   filename: './engine.log',
@@ -42,9 +44,11 @@ export default class Engine{
    * @param {Number} width - the width of the zone (if creating on)
    * @param {Number} height - the width of the zone (if creating on)
    */
-  constructor(id=0, width=DEFAULT_ZONE_WIDTH, height=DEFAULT_ZONE_HEIGHT){
+  constructor(id=0, width=DEFAULT_ZONE_WIDTH, height=DEFAULT_ZONE_HEIGHT, populate=true){
     this.emitter = new EventEmitter();
     this.tick = 0;
+
+    this.populate = populate;
 
     // seed width and height data abou the zone
     // incase we are creating one.
@@ -53,6 +57,7 @@ export default class Engine{
       height: height
     };
 
+    //Store(this.emitter);
 
     // keep a reference to the game loop
     this.loop = null;
@@ -110,19 +115,22 @@ export default class Engine{
     const options = [{
       item: Tree,
       clusters: {
-        amount: 5,
+        amount: 13,
         size: 15
       }
     },{
       item: Grass,
       clusters: {
-        amount: 15,
+        amount: 8,
         size: 20
       }
     }];
 
-    this.zone.populateMap(options);
+    if(this.populate){
+      this.zone.populateMap(options);
+    }
 
+    //this.emitter.emit('zoneCreated', this.zone);
   }
 
   /**
