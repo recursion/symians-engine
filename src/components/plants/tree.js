@@ -31,8 +31,21 @@ export default class Tree extends GObj {
     return privates.get(this).blocks;
   }
 
+  /**
+   * returns the plants current size
+   */
   get size(){
     return privates.get(this).size.value;
+  }
+
+  /**
+   * called on sim heartbeat.
+   */
+  update(time){
+    privates.get(this).growable.grow(time);
+    if(time % 10 === 0){
+      // try to reproduce?
+    }
   }
 
   /**
@@ -54,13 +67,14 @@ export default class Tree extends GObj {
     return JSON.stringify(this.prettify());
   }
 
-  update(time){
 
-    privates.get(this).growable.grow(time);
-
-    if(time % 10 === 0){
-      // try to reproduce?
-    }
+  /*
+  toString(){
+    let str = super.toString();
+    str = str.slice(0, -1);
+    str += `, Size: ${this.size}}`;
+    return str;
   }
+  */
 
 }

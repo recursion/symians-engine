@@ -113,19 +113,18 @@ export default class Zone {
           let it = new item(loc.x, loc.y, privates.get(this).emitter);
           itemName = it.constructor.name;
 
-          if(location.add(it)){
-            itemsPlaced++;
-            continue;
+          let chance = Math.random();
+          if (chance > 0.5){
+            if(location.add(it) ){
+              itemsPlaced++;
+              continue;
+            }
           }
         }
-        // we werent able to place
-        // look for a new location
-        loc = finder(loc);
-      } else {
-        loc = finder(loc);
       }
-
+      loc = finder(loc);
     }
+
     // hand the item name back to whoever called us
     // so they know what we actually made
     return itemName;
@@ -166,7 +165,8 @@ function randy(min, max){
  */
 function findNextLoc(){
   let lastDir = 0;
-  let moves = 1;
+  let moveTotal = 1;
+  let moves = 0;
   /**
    * takes a location and finds the next location
    * in its sequence of square making.
@@ -178,22 +178,38 @@ function findNextLoc(){
     let loc = Object.assign({}, location);
     switch(lastDir){
       case 0:
-        loc.x += moves;
-        lastDir++;
+        loc.x++;
+        moves++;
+        if(moves === moveTotal){
+          lastDir++;
+          moves = 0;
+        }
         break;
       case 1:
-        loc.y += moves;
-        lastDir++;
+        loc.y++;
         moves++;
+        if(moves === moveTotal){
+          lastDir++;
+          moves = 0;
+          moveTotal++;
+        }
         break;
       case 2:
-        loc.x -= moves;
-        lastDir++;
+        loc.x--;
+        moves++;
+        if(moves === moveTotal){
+          lastDir++;
+          moves = 0;
+        }
         break;
       case 3:
-        loc.y -= moves;
-        lastDir = 0;
+        loc.y--;
         moves++;
+        if(moves === moveTotal){
+          lastDir = 0;
+          moves = 0;
+          moveTotal++;
+        }
         break;
       default:
         winston.debug('Invalid switch:', loc);

@@ -67,11 +67,14 @@ export default class Grass extends GObj {
     return JSON.stringify(this.prettify());
   }
 
+
+  /*
   toString(){
     let str = super.toString();
     str = str.slice(0, -1);
     str += `, Size: ${this.size}}`;
     return str;
   }
+  */
 
 }
