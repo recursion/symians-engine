@@ -2,7 +2,7 @@
 import winston from 'winston'
 import EventEmitter from 'eventEmitter3'
 
-//import Store from './store'
+import Store from './store'
 
 //import {loader} from 'symians-models'
 import Grass from './components/plants/grass'
@@ -57,7 +57,7 @@ export default class Engine{
       height: height
     };
 
-    //Store(this.emitter);
+    Store(this.emitter);
 
     // keep a reference to the game loop
     this.loop = null;
@@ -130,7 +130,7 @@ export default class Engine{
       this.zone.populateMap(options);
     }
 
-    //this.emitter.emit('zoneCreated', this.zone);
+    this.emitter.emit('zoneCreated', this.zone);
   }
 
   /**

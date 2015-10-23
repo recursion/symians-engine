@@ -13,7 +13,17 @@ describe('Location', ()=> {
     expect(location).to.have.property('type', 'grass');
     expect(location).to.have.property('isBlocked', false);
     expect(location).to.have.property('contents');
+    expect(location).to.have.property('position');
+    expect(location.position).to.have.property('x');
   });
+
+  describe('#toJSON', ()=>{
+    it('returns a JSON parsable string', ()=>{
+      let o = JSON.parse(location.toJSON());
+      expect(o).to.have.property('x');
+    });
+  });
+
   describe('.contents', ()=>{
     it('is not directly writable', ()=>{
       const og = location.contents;

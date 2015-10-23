@@ -12,7 +12,22 @@ export default function(emitter){
 }
 
 function zoneCreated(zone){
-  client.publish('zoneCreated', zone);
+  let locs = [];
+  const gobjects = [];
+  zone.locations.forEach((loc)=>{
+    locs.push(loc.toJSONREADY());
+    loc.contents.forEach((object)=>{
+      gobjects.push(object.toJSONREADY());
+    });
+  });
+
+  client.publish('zoneCreated', JSON.stringify({
+      width: zone.width,
+      height: zone.height,
+      locations: locs,
+      objects: gobjects
+    })
+  );
 }
 
 function create(obj, type='mob', zoneId){

@@ -75,15 +75,34 @@ export default class Location extends GObj {
       }
       return privates.get(this).contents.splice(idx, 1)[0];
     }
+}
+
+/**
+ * returns an object ready to be json stringified
+ */
+  toJSONREADY(){
+    return this.toJSON(false);
   }
 
-  toString(){
+/**
+ * returns a json string representing the object
+ */
+  toJSON(stringify=true){
+
+
     const obj = {
+      x: this.position.x,
+      y: this.position.y,
       type: privates.get(this).type,
       isBlocked: this.isBlocked,
-      contents: this.contents
+      contents: this.contents//cnts
     };
-    return obj;
+
+    if (stringify){
+      return JSON.stringify(obj);
+    } else {
+      return obj;
+    }
   }
 
   /**
