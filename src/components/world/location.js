@@ -81,28 +81,20 @@ export default class Location extends GObj {
  * returns an object ready to be json stringified
  */
   toJSONREADY(){
-    return this.toJSON(false);
-  }
-
-/**
- * returns a json string representing the object
- */
-  toJSON(stringify=true){
-
-
-    const obj = {
+    return {
       x: this.position.x,
       y: this.position.y,
       type: privates.get(this).type,
       isBlocked: this.isBlocked,
       contents: this.contents//cnts
     };
+  }
 
-    if (stringify){
-      return JSON.stringify(obj);
-    } else {
-      return obj;
-    }
+/**
+ * returns a json string representing the object
+ */
+  toJSON(){
+    return JSON.stringify(this.toJSONREADY());
   }
 
   /**

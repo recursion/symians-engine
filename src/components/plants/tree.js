@@ -39,26 +39,21 @@ export default class Tree extends GObj {
    * returns an object ready to be json stringified
    */
   toJSONREADY(){
-    return this.toJSON(false);
-  }
-
-  /**
-   * returns a json string representing the object
-   */
-  toJSON(stringify=true){
-    const obj = {
+    return {
       type: this.constructor.name,
       x: this.position.x,
       y: this.position.y,
       size: this.size
     };
-
-    if (stringify){
-      return JSON.stringify(obj);
-    } else {
-      return obj;
-    }
   }
+
+  /**
+   * returns a json string representing the object
+   */
+  toJSON(){
+    return JSON.stringify(this.toJSONREADY());
+  }
+
   update(time){
 
     privates.get(this).growable.grow(time);

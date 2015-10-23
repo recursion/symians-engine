@@ -11,16 +11,19 @@ export default function(emitter){
   emitter.on('zoneCreated', zoneCreated);
 }
 
+/**
+ * handler for the zoneCreated event
+ * publishes the zone to redis
+ * @param {Zone} - zone - a zone instance
+ */
 function zoneCreated(zone){
-  let locs = [];
-  const gobjects = [];
-  zone.locations.forEach((loc)=>{
-    locs.push(loc.toJSONREADY());
-    loc.contents.forEach((object)=>{
-      gobjects.push(object.toJSONREADY());
-    });
-  });
 
+  /** isolate locations and game objects for publish */
+  const [locs, gobjects] = prepLocations(zone.locations);
+
+  /**
+   * publish the zone info
+   */
   client.publish('zoneCreated', JSON.stringify({
       width: zone.width,
       height: zone.height,
@@ -28,6 +31,25 @@ function zoneCreated(zone){
       objects: gobjects
     })
   );
+}
+
+/**
+ * Prepare zone locations for publish
+ * by seperating nested objects out into a seperate object
+ * @param {Array} locations - an array of zone locations
+ * TODO create a method for extracting deeper levels of nesting
+ */
+function prepLocations(locations){
+  let locs = [];
+  const gobjects = [];
+  locations.forEach((loc)=>{
+    locs.push(loc.toJSONREADY());
+    loc.contents.forEach((object)=>{
+      // TODO check to see if this object is a container
+      gobjects.push(object.toJSONREADY());
+    });
+  });
+  return [locs, gobjects];
 }
 
 function create(obj, type='mob', zoneId){
