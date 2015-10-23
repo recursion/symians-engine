@@ -43,10 +43,10 @@ function prepLocations(locations){
   let locs = [];
   const gobjects = [];
   locations.forEach((loc)=>{
-    locs.push(loc.toJSONREADY());
+    locs.push(loc.prettify());
     loc.contents.forEach((object)=>{
       // TODO check to see if this object is a container
-      gobjects.push(object.toJSONREADY());
+      gobjects.push(object.prettify());
     });
   });
   return [locs, gobjects];

@@ -51,7 +51,7 @@ export default class Grass extends GObj {
   /**
    * returns an object ready to be json stringified
    */
-  toJSONREADY(){
+  prettify(){
     return {
       type: this.constructor.name,
       x: this.position.x,
@@ -64,7 +64,7 @@ export default class Grass extends GObj {
    * returns a json string representing the object
    */
   toJSON(){
-    return JSON.stringify(this.toJSONREADY());
+    return JSON.stringify(this.prettify());
   }
 
   toString(){

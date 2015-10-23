@@ -133,7 +133,7 @@ export default class Zone {
   toString(){
     let locs = [];
     this.locations.forEach((loc)=>{
-      locs.push(loc.toString());
+      locs.push(loc.prettify());
     });
     const str = {
       width: this.width,

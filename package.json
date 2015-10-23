@@ -4,7 +4,7 @@
   "description": "The simulation engine for the symians project",
   "main": "index.js",
   "scripts": {
-    "start:dev": "nodemon --watch src --exec npm run run",
+    "start:dev": "nodemon --watch src --exec npm run start",
     "start": "node index",
     "test:cont": "mocha --watch --opts ./mocha.opts src",
     "test": "mocha --opts ./mocha.opts src",

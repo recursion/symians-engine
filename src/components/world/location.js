@@ -80,13 +80,13 @@ export default class Location extends GObj {
 /**
  * returns an object ready to be json stringified
  */
-  toJSONREADY(){
+  prettify(){
     return {
       x: this.position.x,
       y: this.position.y,
       type: privates.get(this).type,
       isBlocked: this.isBlocked,
-      contents: this.contents//cnts
+      contents: this.contents
     };
   }
 
@@ -94,7 +94,7 @@ export default class Location extends GObj {
  * returns a json string representing the object
  */
   toJSON(){
-    return JSON.stringify(this.toJSONREADY());
+    return JSON.stringify(this.prettify());
   }
 
   /**
@@ -105,6 +105,8 @@ export default class Location extends GObj {
       GRASS: 'grass',
       AIR: 'air',
       DIRT: 'dirt',
+      SAND: 'sand',
+      ROCK: 'rock',
       WATER: 'water'
     };
   }
