@@ -115,14 +115,14 @@ export default class Engine{
     const options = [{
       item: Tree,
       clusters: {
-        amount: 23,
-        size: 25
+        amount: 53,
+        size: 35
       }
     },{
       item: Grass,
       clusters: {
-        amount: 28,
-        size: 40
+        amount: 68,
+        size: 60
       }
     }];
 

@@ -114,7 +114,7 @@ export default class Zone {
           itemName = it.constructor.name;
 
           let chance = Math.random();
-          if (chance > 0.5){
+          if (chance > 0.75){
             if(location.add(it) ){
               itemsPlaced++;
               continue;
@@ -137,6 +137,7 @@ export default class Zone {
     const str = {
       width: this.width,
       height: this.height,
+      test: 'You know it baby!',
       locations: locs
     };
     return JSON.stringify(str);

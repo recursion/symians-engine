@@ -29,8 +29,8 @@ function zoneCreated(zone){
       height: zone.height,
       locations: locs,
       objects: gobjects
-    })
-  );
+  })
+      );
 }
 
 /**
@@ -44,10 +44,12 @@ function prepLocations(locations){
   const gobjects = [];
   locations.forEach((loc)=>{
     locs.push(loc.prettify());
+    /*
     loc.contents.forEach((object)=>{
       // TODO check to see if this object is a container
       gobjects.push(object.prettify());
     });
+    */
   });
   return [locs, gobjects];
 }
