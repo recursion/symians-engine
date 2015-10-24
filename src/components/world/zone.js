@@ -129,6 +129,10 @@ export default class Zone {
     // so they know what we actually made
     return itemName;
   }
+
+  /**
+   * convert the object to a nice string
+   */
   toString(){
     let locs = [];
     this.locations.forEach((loc)=>{

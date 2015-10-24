@@ -81,12 +81,17 @@ export default class Location extends GObj {
  * returns an object ready to be json stringified
  */
   prettify(){
+    let contents = [];
+    this.contents.forEach((o)=>{
+      contents.push(o.prettify());
+    });
+
     return {
       x: this.position.x,
       y: this.position.y,
       type: privates.get(this).type,
       isBlocked: this.isBlocked,
-      contents: this.contents
+      contents: contents
     };
   }
 
