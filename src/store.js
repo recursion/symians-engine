@@ -5,6 +5,8 @@ import redis from 'redis'
 const client = redis.createClient();
 Promise.promisifyAll(redis.RedisClient.prototype);
 
+let growCache = [];
+
 /**
  * register event handlers for system emitter
  * @param {EventEmitter3} emitter - the system event emitter
@@ -13,6 +15,18 @@ export default function(emitter){
   //emitter.on('create', create);
   //emitter.on('save', save);
   emitter.on('zoneCreated', publishZone);
+  emitter.on('grow', grow);
+}
+
+/**
+ * publish an objects changes
+ */
+function grow(obj){
+  growCache.push({size: obj.size, id: obj.id});
+  if (growCache.length > 99){
+    client.publish('grow', JSON.stringify(growCache));
+    growCache = [];
+  }
 }
 
 /**

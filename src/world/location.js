@@ -83,7 +83,11 @@ export default class Location extends GObj {
   prettify(){
     let contents = [];
     this.contents.forEach((o)=>{
-      contents.push(o.prettify());
+      if(o.prettify){
+        contents.push(o.prettify());
+      } else {
+        console.log('found: ', o);
+      }
     });
 
     return {

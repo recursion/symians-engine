@@ -21,6 +21,16 @@ describe('GObj - The base class - all "in world" objects derive from this object
     expect(err).to.exist;
   });
 
+  it('has an autoincrementing id', ()=> {
+    expect(gobj.id).to.exist;
+
+    const id1 = gobj.id;
+    const obj2 = new Gobj(1, 1, EM);
+    const id2 = obj2.id;
+    expect(id1).to.not.equal(id2);
+
+  });
+
   describe('#on', ()=>{
     it('is a wrapper for the systems event emitter', ()=>{
       let spy = sinon.spy(EM, 'on');

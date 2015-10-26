@@ -14,7 +14,7 @@ export default class Growable {
    * @param {Number} growthRate - the rate at which the plant will grow
    * - the higher the number the slower the growth.
    */
-  constructor(size, growthRate=100){
+  constructor(size, growthRate=genRandomGrowthRate()){
     if(!(size instanceof Trait)){
       throw new Error('Growable requires parameter size to be instance of Trait');
     }
@@ -28,10 +28,19 @@ export default class Growable {
    * when time is evenly divisible by growthRate, we
    * increase the size property.
    * @param {Number} time - sim time
+   * @returns {Boolean} - whether or not we grew
    */
   grow(time){
-    if(time % this[GROWTHRATE] === 0){
+    if(time % this[GROWTHRATE] === 0 && this[SIZE].value < 16){
       this[SIZE].value++;
+      return true;
     }
+    return false;
   }
+}
+/**
+ * returns a number between 2 an 5
+ */
+function genRandomGrowthRate(){
+  return Math.floor(Math.random() * (16-10) + 10);
 }

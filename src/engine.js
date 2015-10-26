@@ -5,6 +5,7 @@ import EventEmitter from 'eventEmitter3'
 import Store from './store'
 
 //import {loader} from 'symians-models'
+import Squirrel from './mobs/squirrel'
 import Grass from './plants/grass'
 import Tree from './plants/tree'
 import Zone from './world/zone'
@@ -76,7 +77,8 @@ export default class Engine{
   start(){
     winston.info('Starting engine');
     this.loop = setInterval(()=>{
-      this.emitter.emit('heartbeat', this.tick++);
+      this.emitter.emit('heartbeat', this.tick);
+      this.tick++;
     }, this.speed);
   }
 
@@ -123,6 +125,12 @@ export default class Engine{
       clusters: {
         amount: 68,
         size: 60
+      }
+    },{
+      item: Squirrel,
+      clusters: {
+        amount: 6,
+        size: 6
       }
     }];
 

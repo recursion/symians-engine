@@ -1,8 +1,12 @@
 import winston from 'winston'
 import Position from './position'
 import EventEmitter from 'eventemitter3'
+import Trait from '../core/trait'
 
-const privates = new WeakMap();
+const privateMembers = new WeakMap();
+
+/** used to give game objects unique ids 8**/
+let gobjID = 0;
 
 /**
  * base class for all other game items.
@@ -19,15 +23,15 @@ export default class GObj {
     }
 
     const privs = {
+      id: gobjID++,
       position: new Position(x, y),
       age: 0,
+      size: new Trait(0),
+      blocks: true,
       emitter: emitter
     };
+    privateMembers.set(this, privs);
 
-    // all gobjects have a position
-    privates.set(this, privs);
-    privates.set(this, privs);
-    privates.set(this, privs);
     emitter.on('heartbeat', this.update.bind(this));
 
     /**
@@ -40,29 +44,48 @@ export default class GObj {
     }
   }
 
+  get id(){
+    return privateMembers.get(this).id;
+  }
+
   /**
    * returns an object with the position.x and position.y property
    * @returns {Position}
    */
   get position(){
-    let position = privates.get(this).position;
+    let position = privateMembers.get(this).position;
     return {x: position.x, y: position.y};
+  }
+
+  get blocks(){
+    return privateMembers.get(this).blocks;
+  }
+
+  trait(t){
+    return privateMembers.get(this)[t];
+  }
+
+  /**
+   * returns the plants current size
+   */
+  get size(){
+    return privateMembers.get(this).size.value;
   }
 
   /* wrap event emitter on */
   on(...args){
-    let emitter = privates.get(this).emitter;
+    let emitter = privateMembers.get(this).emitter;
     emitter.on(...args);
   }
 
   /* wrap event emitter emit */
   emit(...args){
-    let emitter = privates.get(this).emitter;
+    let emitter = privateMembers.get(this).emitter;
     emitter.emit(...args);
   }
 
   get age(){
-    const age = privates.get(this).age;
+    const age = privateMembers.get(this).age;
     return age;
   }
 
@@ -71,9 +94,28 @@ export default class GObj {
    * @param {Number} - The simulation world time
    */
   update(time){
-    privates.get(this).age++
+    privateMembers.get(this).age++
   }
 
+  /**
+   * returns an object ready to be json stringified
+   */
+  prettify(){
+    return {
+      id: this.id,
+      type: this.constructor.name,
+      x: this.position.x,
+      y: this.position.y,
+      size: this.size
+    };
+  }
+
+  /**
+   * returns a json string representing the object
+   */
+  toJSON(){
+    return JSON.stringify(this.prettify());
+  }
   /**
    * toString override
    */
