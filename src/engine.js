@@ -5,9 +5,9 @@ import EventEmitter from 'eventEmitter3'
 import Store from './store'
 
 //import {loader} from 'symians-models'
-import Grass from './components/plants/grass'
-import Tree from './components/plants/tree'
-import Zone from './components/world/zone'
+import Grass from './plants/grass'
+import Tree from './plants/tree'
+import Zone from './world/zone'
 
 const DEFAULT_ZONE_WIDTH = 256;
 const DEFAULT_ZONE_HEIGHT = 256;

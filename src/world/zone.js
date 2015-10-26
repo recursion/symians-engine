@@ -90,6 +90,17 @@ export default class Zone {
   }
 
   /**
+   * prepare locations for json transport
+   * @returns {Array} of prettified locations
+   */
+  jsonPrepLocations(){
+    return this.locations.map((loc)=>{
+      return loc.prettify();
+    });
+  }
+
+
+  /**
    * create a cluster of items around a point in the zone
    * @param {GObj} item - the item to cluster
    * @param {Point} loc - the point to center the cluster around
@@ -117,7 +128,6 @@ export default class Zone {
           if (chance > 0.75){
             if(location.add(it) ){
               itemsPlaced++;
-              continue;
             }
           }
         }
@@ -128,23 +138,6 @@ export default class Zone {
     // hand the item name back to whoever called us
     // so they know what we actually made
     return itemName;
-  }
-
-  /**
-   * convert the object to a nice string
-   */
-  toString(){
-    let locs = [];
-    this.locations.forEach((loc)=>{
-      locs.push(loc.prettify());
-    });
-    const str = {
-      width: this.width,
-      height: this.height,
-      test: 'You know it baby!',
-      locations: locs
-    };
-    return JSON.stringify(str);
   }
 
 }
