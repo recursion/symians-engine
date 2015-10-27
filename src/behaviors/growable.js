@@ -42,5 +42,5 @@ export default class Growable {
  * returns a number between 2 an 5
  */
 function genRandomGrowthRate(){
-  return Math.floor(Math.random() * (200 - 50) + 50);
+  return Math.floor(Math.random() * (100 - 20) + 20);
 }

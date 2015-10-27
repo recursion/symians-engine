@@ -29,11 +29,17 @@ export default class Tree extends GObj {
    * called on sim heartbeat.
    */
   update(time){
+    super.update(time);
     if(privateMembers.get(this).growable.grow(time)){
       this.emit('grow', this);
     }
-    if(time % 10 === 0){
-      // try to reproduce?
+    if(this.age > 50 && time % 10 === 0){
+      // pick a random nearby spot
+      this.emit('selectRandomNearbyLocation', this, 5, (loc)=>{
+        if(loc && !loc.isBlocked){
+          loc.add(new Tree(loc.position.x, loc.position.y, this.emitter));
+        }
+      });
     }
   }
 

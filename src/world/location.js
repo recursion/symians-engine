@@ -48,12 +48,13 @@ export default class Location extends GObj {
    * @returns {Boolean}
    */
   add(obj){
+    if(this.isBlocked){
+      return false;
+    }
+
     if(obj.blocks){
       privates.get(this).blocked = true;
     }
-
-    // validate this addition
-      // return false if not valid
 
     privates.get(this).contents.push(obj);
     return true;

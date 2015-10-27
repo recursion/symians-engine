@@ -2,7 +2,8 @@
 import winston from 'winston'
 import EventEmitter from 'eventEmitter3'
 
-import Store from './store'
+import * as EventHandlers from './handlers'
+import * as Store from './store'
 
 //import {loader} from 'symians-models'
 import Squirrel from './mobs/squirrel'
@@ -58,7 +59,8 @@ export default class Engine{
       height: height
     };
 
-    Store(this.emitter);
+    Store.registerHandlers(this.emitter, this);
+    EventHandlers.registerHandlers(this.emitter, this);
 
     // keep a reference to the game loop
     this.loop = null;

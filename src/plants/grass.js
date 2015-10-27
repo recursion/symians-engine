@@ -4,6 +4,9 @@ import Growable from '../behaviors/growable'
 
 const privateMembers = new WeakMap();
 
+let goCount = 0;
+let noGoCount = 0;
+
 /**
  * basic living/growing/edible grass
  */
@@ -27,11 +30,21 @@ export default class Grass extends GObj {
    * called on sim heartbeat.
    */
   update(time){
+    super.update(time);
     if(privateMembers.get(this).growable.grow(time)){
       this.emit('grow', this);
     }
-    if(time % 10 === 0){
-      // try to reproduce?
+
+    // if older than 1000 ticks and ..
+    if(this.age > 50 && time % 10 === 0){
+      // pick a random nearby spot
+      this.emit('selectRandomNearbyLocation', this, 2, (loc)=>{
+        if(loc && !loc.isBlocked){
+          loc.add(new Grass(loc.position.x, loc.position.y, this.emitter));
+        }
+      });
+        // if its open
+          // spawn
     }
   }
 

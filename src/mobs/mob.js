@@ -61,7 +61,7 @@ export default class Mob extends GObj {
   toString(){
     let str = super.toString();
     str = str.slice(0, -1);
-    str += `, Direction: x: ${this.direction[0]}, y: ${this.direction[0]}}`;
+    str += `, Direction: x: ${this.direction.x}, y: ${this.direction.y}}`;
     return str;
   }
 }

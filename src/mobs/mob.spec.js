@@ -17,8 +17,8 @@ describe('Mob', ()=> {
   });
   it('has a direction x and direction y property', ()=> {
     expect(mob).to.have.property('direction');
-    expect(mob.position).to.have.property('x');
-    expect(mob.position).to.have.property('y');
+    expect(mob.direction).to.have.property('x');
+    expect(mob.direction).to.have.property('y');
   });
   describe('#on', ()=>{
     it('is a wrapper for the systems event emitter', ()=>{

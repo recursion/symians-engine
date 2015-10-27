@@ -38,9 +38,8 @@ export default class GObj {
      * Emit a creation event
      * (except for locations)
      **/
-    if(this.constructor.name !== 'location'){
+    if(this.constructor.name !== 'Location'){
       emitter.emit('create', this.constructor.name, this);
-      //winston.info(`created object: ${this}`);
     }
   }
 
@@ -63,6 +62,10 @@ export default class GObj {
 
   trait(t){
     return privateMembers.get(this)[t];
+  }
+
+  get emitter(){
+    return privateMembers.get(this).emitter;
   }
 
   /**

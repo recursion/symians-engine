@@ -11,10 +11,10 @@ let growCache = [];
  * register event handlers for system emitter
  * @param {EventEmitter3} emitter - the system event emitter
  */
-export default function(emitter){
-  //emitter.on('create', create);
-  //emitter.on('save', save);
+export function registerHandlers(emitter){
   emitter.on('zoneCreated', publishZone);
+  emitter.on('create', create);
+  //emitter.on('save', save);
   emitter.on('grow', grow);
 }
 
@@ -46,8 +46,11 @@ function publishZone(zone){
 /**
  * publish and save new object
  */
-function create(obj, type='mob', zoneId){
+function create(type, obj){
 
+  client.publish('create', JSON.stringify(obj.prettify()));
+
+  /*
   winston.info('Creating: ', type, obj);
   // construct the iterator
   const idKey = `zone:${zoneId}:${type}`;
@@ -69,6 +72,7 @@ function create(obj, type='mob', zoneId){
 
       client.publish('create', JSON.stringify(obj));
     });
+  */
 
 }
 
