@@ -108,25 +108,29 @@ export default class Zone {
    */
   createCluster(item, loc, size){
 
+    /* how closely together items get placed */
+    const distribution = 0.93;
+
     let itemName;
     let itemsPlaced = 0;
-    // create our function to find nearby locations
+
+    // function to find nearby locations
     const finder = findNextLoc();
 
     // do until we have fullfilled the request
     while(itemsPlaced < size){
-      // try to add an item to this location
+      // try to get a valid location
       let location = this.getLocation(loc.x, loc.y);
       if(location){
         // if we are able to place the item
         if (!location.isBlocked){
           // get the constructor name of the item we are making
-          let it = new item(loc.x, loc.y, privates.get(this).emitter);
-          itemName = it.constructor.name;
+          let newItem = new item(loc.x, loc.y, privates.get(this).emitter);
+          itemName = newItem.constructor.name;
 
           let chance = Math.random();
-          if (chance > 0.75){
-            if(location.add(it) ){
+          if (chance > distribution){
+            if(location.add(newItem) ){
               itemsPlaced++;
             }
           }

@@ -15,7 +15,7 @@ const DEFAULT_ZONE_WIDTH = 256;
 const DEFAULT_ZONE_HEIGHT = 256;
 
 // configure the logger
-const options = {
+const consoleOptions = {
   timestamp: true,
   colorize: true
 };
@@ -30,9 +30,29 @@ winston.remove(winston.transports.Console);
 try{
   winston.remove(winston.transports.File);
 }catch(e){}
-winston.add(winston.transports.Console, options);
+winston.add(winston.transports.Console, consoleOptions);
 winston.add(winston.transports.File, fileOptions);
 
+
+const worldGenOptions = [{
+  item: Tree,
+  clusters: {
+    amount: 53,
+    size: 35
+  }
+},{
+  item: Grass,
+  clusters: {
+    amount: 68,
+    size: 60
+  }
+},{
+  item: Squirrel,
+  clusters: {
+    amount: 6,
+    size: 6
+  }
+}];
 
 /**
  * zone engine
@@ -64,7 +84,7 @@ export default class Engine{
 
     // keep a reference to the game loop
     this.loop = null;
-    this.speed = 100;
+    this.speed = 10;
     // pass the emitter to our storage component
     // Store(this.emitter);
     this.loadOrCreate(id);
@@ -81,6 +101,13 @@ export default class Engine{
     this.loop = setInterval(()=>{
       this.emitter.emit('heartbeat', this.tick);
       this.tick++;
+
+      if(this.tick === 100){
+        console.log('Populating map!');
+        this.zone.populateMap(worldGenOptions);
+      }
+
+
     }, this.speed);
   }
 
@@ -116,30 +143,6 @@ export default class Engine{
     this.zone = new Zone(this.emitter, this.zone.width, this.zone.height);
     this.zone.createMap();
     //this.zone.populateMap();
-    const options = [{
-      item: Tree,
-      clusters: {
-        amount: 53,
-        size: 35
-      }
-    },{
-      item: Grass,
-      clusters: {
-        amount: 68,
-        size: 60
-      }
-    },{
-      item: Squirrel,
-      clusters: {
-        amount: 6,
-        size: 6
-      }
-    }];
-
-    if(this.populate){
-      this.zone.populateMap(options);
-    }
-
     this.emitter.emit('zoneCreated', this.zone);
   }
 

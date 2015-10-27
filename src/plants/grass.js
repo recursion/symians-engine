@@ -21,7 +21,7 @@ export default class Grass extends GObj {
   constructor(...args){
     super(...args);
     const privs = {
-      growable: new Growable(this.trait('size'))
+      growable: new Growable(this.trait('size'), genGrowthRate())
     };
     privateMembers.set(this, privs);
   }
@@ -31,51 +31,32 @@ export default class Grass extends GObj {
    */
   update(time){
     super.update(time);
+
+    let changed = false;
     if(privateMembers.get(this).growable.grow(time)){
-      this.emit('grow', this);
+      changed = true;
     }
 
     // if older than 1000 ticks and ..
-    if(this.age > 50 && time % 10 === 0){
+    if(this.age > 100 && time % 100 === 0){
       // pick a random nearby spot
       this.emit('selectRandomNearbyLocation', this, 2, (loc)=>{
         if(loc && !loc.isBlocked){
           loc.add(new Grass(loc.position.x, loc.position.y, this.emitter));
         }
       });
-        // if its open
-          // spawn
+    }
+
+    if(changed){
+      this.emit('change', this);
     }
   }
 
-  /**
-   * returns an object ready to be json stringified
-   */
-  prettify(){
-    return {
-      id: this.id,
-      type: this.constructor.name,
-      x: this.position.x,
-      y: this.position.y,
-      size: this.size
-    };
-  }
+}
 
-  /**
-   * returns a json string representing the object
-   */
-  toJSON(){
-    return JSON.stringify(this.prettify());
-  }
-
-
-  /*
-  toString(){
-    let str = super.toString();
-    str = str.slice(0, -1);
-    str += `, Size: ${this.size}}`;
-    return str;
-  }
-  */
-
+/**
+ * returns a random number between 99 an 20
+ */
+function genGrowthRate(){
+  return Math.floor(Math.random() * (80 - 10) + 10);
 }

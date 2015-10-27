@@ -5,7 +5,10 @@ import redis from 'redis'
 const client = redis.createClient();
 Promise.promisifyAll(redis.RedisClient.prototype);
 
-let growCache = [];
+let changes = [];
+let created = [];
+let lastChangesUpdate = 0;
+let lastCreatedUpdate = 0;
 
 /**
  * register event handlers for system emitter
@@ -15,17 +18,18 @@ export function registerHandlers(emitter){
   emitter.on('zoneCreated', publishZone);
   emitter.on('create', create);
   //emitter.on('save', save);
-  emitter.on('grow', grow);
+  emitter.on('change', change);
 }
 
 /**
  * publish an objects changes
  */
-function grow(obj){
-  growCache.push({size: obj.size, id: obj.id});
-  if (growCache.length > 999){
-    client.publish('grow', JSON.stringify(growCache));
-    growCache = [];
+function change(obj){
+  changes.push(obj.prettify());
+  if (lastChangesUpdate === 0 || Date.now() - lastChangesUpdate > 250){
+    client.publish('change', JSON.stringify(changes));
+    changes = [];
+    lastChangesUpdate = Date.now();
   }
 }
 
@@ -48,7 +52,13 @@ function publishZone(zone){
  */
 function create(type, obj){
 
-  client.publish('create', JSON.stringify(obj.prettify()));
+  created.push(obj.prettify());
+
+  if (lastCreatedUpdate === 0 || Date.now() - lastCreatedUpdate > 250){
+    client.publish('create', JSON.stringify(created));
+    created = [];
+    lastCreatedUpdate = Date.now();
+  }
 
   /*
   winston.info('Creating: ', type, obj);

@@ -106,6 +106,7 @@ export default class GObj {
   prettify(){
     return {
       id: this.id,
+      age: this.age,
       type: this.constructor.name,
       x: this.position.x,
       y: this.position.y,
