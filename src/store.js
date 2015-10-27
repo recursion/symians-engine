@@ -23,7 +23,7 @@ export default function(emitter){
  */
 function grow(obj){
   growCache.push({size: obj.size, id: obj.id});
-  if (growCache.length > 99){
+  if (growCache.length > 999){
     client.publish('grow', JSON.stringify(growCache));
     growCache = [];
   }
