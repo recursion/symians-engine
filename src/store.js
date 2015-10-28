@@ -2,13 +2,13 @@ import Promise from 'bluebird'
 import winston from 'winston'
 import redis from 'redis'
 
+const broadcastInterval = 500;
+
 const client = redis.createClient();
 Promise.promisifyAll(redis.RedisClient.prototype);
 
-let changes = [];
-let created = [];
-let lastChangesUpdate = 0;
-let lastCreatedUpdate = 0;
+let updates = [];
+let lastBroadcast = 0;
 
 /**
  * register event handlers for system emitter
@@ -17,19 +17,25 @@ let lastCreatedUpdate = 0;
 export function registerHandlers(emitter){
   emitter.on('zoneCreated', publishZone);
   emitter.on('create', create);
-  //emitter.on('save', save);
   emitter.on('change', change);
 }
 
 /**
- * publish an objects changes
+ * publish events queue
+ * @param {String} type - type of event
+ * TODO Depracate obj
+ * @param {GObj} obj - the object experiencing the event
+ * TODO implement Event object (instead of object)
+ * @param {Event} event - all the data the client needs about the event
  */
-function change(obj){
-  changes.push(obj.prettify());
-  if (lastChangesUpdate === 0 || Date.now() - lastChangesUpdate > 150){
-    client.publish('change', JSON.stringify(changes));
-    changes = [];
-    lastChangesUpdate = Date.now();
+function broadcast(type, obj){
+
+  updates.push({type: type, object: obj.prettify()});
+
+  if (lastBroadcast === 0 || Date.now() - lastBroadcast >= broadcastInterval){
+    client.publish('update', JSON.stringify(updates));
+    updates = [];
+    lastBroadcast = Date.now();
   }
 }
 
@@ -48,59 +54,16 @@ function publishZone(zone){
 }
 
 /**
- * publish and save new object
+ * object changes handler
  */
-function create(type, obj){
-
-  created.push(obj.prettify());
-
-  if (lastCreatedUpdate === 0 || Date.now() - lastCreatedUpdate > 150){
-    client.publish('create', JSON.stringify(created));
-    created = [];
-    lastCreatedUpdate = Date.now();
-  }
-
-  /*
-  winston.info('Creating: ', type, obj);
-  // construct the iterator
-  const idKey = `zone:${zoneId}:${type}`;
-
-  // iterate it and generate the id
-  client.incrAsync(idKey)
-    .then((objId)=>{
-      // create the object key
-      const objKey = `zone:${zoneId}:${type}s:${objId}`;
-
-      // add the key to the object itself
-      obj.key = objKey;
-
-      // create an object in the db
-      client.hmset(objKey, obj);
-
-      // add it to the store list
-      client.rpush(`zone:${zoneId}:${type}s`, `zone:${zoneId}:${type}s:${objId}`);
-
-      client.publish('create', JSON.stringify(obj));
-    });
-  */
-
+function change(obj){
+  broadcast('change', obj);
 }
 
 /**
- * saves an object to redis store
+ * object creation handler
  */
-function save(obj){
+function create(type, obj){
 
-  /*
-  console.log('Yo!', obj);
-  // look the object up by its id
-  client.hgetallAsync(obj._key)
-    .then((object)=>{
-      console.log(object);
-      client.hmset(obj.key, obj);
-    });
-  */
-  // set its new data
-  client.hmset(obj.key, obj);
-  client.publish('update', JSON.stringify(obj));
+  broadcast('create', obj);
 }

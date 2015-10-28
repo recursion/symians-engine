@@ -3,7 +3,7 @@ import winston from 'winston'
 import EventEmitter from 'eventEmitter3'
 
 import * as EventHandlers from './handlers'
-import * as Store from './store'
+import * as Broadcast from './broadcast'
 
 //import {loader} from 'symians-models'
 import Squirrel from './mobs/squirrel'
@@ -79,7 +79,7 @@ export default class Engine{
       height: height
     };
 
-    Store.registerHandlers(this.emitter, this);
+    Broadcast.registerHandlers(this.emitter, this);
     EventHandlers.registerHandlers(this.emitter, this);
 
     // keep a reference to the game loop
@@ -97,16 +97,30 @@ export default class Engine{
    * of heartbeats that have been emitted.
    */
   start(){
+
+    /*
+    const startTime = Date.now();
+    let lastTickTime;
+    */
+
     winston.info('Starting engine');
+
     this.loop = setInterval(()=>{
+
       this.emitter.emit('heartbeat', this.tick);
       this.tick++;
 
-      if(this.tick === 100){
-        console.log('Populating map!');
+      if(this.tick === 20){
+        winston.info('Populating map!');
         this.zone.populateMap(worldGenOptions);
       }
 
+      /*
+      if(this.tick % 100 === 0){
+        console.log(Date.now() - lastTickTime, this.tick);
+      }
+      lastTickTime = Date.now();
+      */
 
     }, this.speed);
   }

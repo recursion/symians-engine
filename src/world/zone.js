@@ -109,7 +109,7 @@ export default class Zone {
   createCluster(item, loc, size){
 
     /* how closely together items get placed */
-    const distribution = 0.9;
+    const distribution = 0.7;
 
     let itemName;
     let itemsPlaced = 0;
@@ -180,7 +180,7 @@ function findNextLoc(){
   return (location)=>{
     // make a copy of the object passed in
     let loc = Object.assign({}, location);
-    let chance = Math.floor(Math.random() * (4 - 1) + 1);
+    let chance = Math.floor(Math.random() * (3 - 1) + 1);
     switch(lastDir){
       case 0:
         loc.x += chance;
