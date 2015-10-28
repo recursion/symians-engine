@@ -109,7 +109,7 @@ export default class Zone {
   createCluster(item, loc, size){
 
     /* how closely together items get placed */
-    const distribution = 0.93;
+    const distribution = 0.015;
 
     let itemName;
     let itemsPlaced = 0;
@@ -159,7 +159,7 @@ function randy(min, max){
 }
 
 /**
- * return a memoized function that moves
+ * return a memoized function that numberOfMoves
  * the x/y coordinate of a location/point by 1
  * each time it is called. The pattern created by
  * the series of calls will become an outward spiraling square.
@@ -167,8 +167,8 @@ function randy(min, max){
  */
 function findNextLoc(){
   let lastDir = 0;
-  let moveTotal = 1;
-  let moves = 0;
+  let numberOfMoves = 1;
+  let moved = 0;
   /**
    * takes a location and finds the next location
    * in its sequence of square making.
@@ -180,37 +180,37 @@ function findNextLoc(){
     let loc = Object.assign({}, location);
     switch(lastDir){
       case 0:
-        loc.x++;
-        moves++;
-        if(moves === moveTotal){
+        loc.x += numberOfMoves;
+        moved++;
+        if(moved === numberOfMoves){
           lastDir++;
-          moves = 0;
+          moved = 0;
         }
         break;
       case 1:
-        loc.y++;
-        moves++;
-        if(moves === moveTotal){
+        loc.y += numberOfMoves;
+        moved++;
+        if(moved === numberOfMoves){
           lastDir++;
-          moves = 0;
-          moveTotal++;
+          numberOfMoves++;
+          moved = 0;
         }
         break;
       case 2:
-        loc.x--;
-        moves++;
-        if(moves === moveTotal){
+        loc.x -= numberOfMoves;
+        moved++;
+        if(moved === numberOfMoves){
           lastDir++;
-          moves = 0;
+          moved = 0;
         }
         break;
       case 3:
-        loc.y--;
-        moves++;
-        if(moves === moveTotal){
+        loc.y -= numberOfMoves;
+        moved++;
+        if(moved === numberOfMoves){
           lastDir = 0;
-          moves = 0;
-          moveTotal++;
+          moved = 0;
+          numberOfMoves++;
         }
         break;
       default:
