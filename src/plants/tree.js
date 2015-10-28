@@ -37,7 +37,7 @@ export default class Tree extends GObj {
     }
 
     // if older than 1000 ticks and ..
-    if(this.age > 100 && time % 100 === 0){
+    if(this.age > 100 && this.size > 8 && time % 100 === 0){
       // pick a random nearby spot
       this.emit('selectRandomNearbyLocation', this, 2, (loc)=>{
         if(loc && !loc.isBlocked){

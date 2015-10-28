@@ -26,7 +26,7 @@ export function registerHandlers(emitter){
  */
 function change(obj){
   changes.push(obj.prettify());
-  if (lastChangesUpdate === 0 || Date.now() - lastChangesUpdate > 250){
+  if (lastChangesUpdate === 0 || Date.now() - lastChangesUpdate > 150){
     client.publish('change', JSON.stringify(changes));
     changes = [];
     lastChangesUpdate = Date.now();
@@ -54,7 +54,7 @@ function create(type, obj){
 
   created.push(obj.prettify());
 
-  if (lastCreatedUpdate === 0 || Date.now() - lastCreatedUpdate > 250){
+  if (lastCreatedUpdate === 0 || Date.now() - lastCreatedUpdate > 150){
     client.publish('create', JSON.stringify(created));
     created = [];
     lastCreatedUpdate = Date.now();

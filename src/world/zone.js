@@ -109,7 +109,7 @@ export default class Zone {
   createCluster(item, loc, size){
 
     /* how closely together items get placed */
-    const distribution = 0.015;
+    const distribution = 0.9;
 
     let itemName;
     let itemsPlaced = 0;
@@ -133,6 +133,8 @@ export default class Zone {
             if(location.add(newItem) ){
               itemsPlaced++;
             }
+          } else {
+            loc = finder(loc);
           }
         }
       }
@@ -159,7 +161,7 @@ function randy(min, max){
 }
 
 /**
- * return a memoized function that numberOfMoves
+ * return a memoized function that moves
  * the x/y coordinate of a location/point by 1
  * each time it is called. The pattern created by
  * the series of calls will become an outward spiraling square.
@@ -167,8 +169,8 @@ function randy(min, max){
  */
 function findNextLoc(){
   let lastDir = 0;
-  let numberOfMoves = 1;
-  let moved = 0;
+  let moveTotal = 1;
+  let moves = 0;
   /**
    * takes a location and finds the next location
    * in its sequence of square making.
@@ -178,39 +180,40 @@ function findNextLoc(){
   return (location)=>{
     // make a copy of the object passed in
     let loc = Object.assign({}, location);
+    let chance = Math.floor(Math.random() * (4 - 1) + 1);
     switch(lastDir){
       case 0:
-        loc.x += numberOfMoves;
-        moved++;
-        if(moved === numberOfMoves){
+        loc.x += chance;
+        moves++;
+        if(moves === moveTotal){
           lastDir++;
-          moved = 0;
+          moves = 0;
         }
         break;
       case 1:
-        loc.y += numberOfMoves;
-        moved++;
-        if(moved === numberOfMoves){
+        loc.y += chance;
+        moves++;
+        if(moves === moveTotal){
           lastDir++;
-          numberOfMoves++;
-          moved = 0;
+          moves = 0;
+          moveTotal++;
         }
         break;
       case 2:
-        loc.x -= numberOfMoves;
-        moved++;
-        if(moved === numberOfMoves){
+        loc.x -= chance;
+        moves++;
+        if(moves === moveTotal){
           lastDir++;
-          moved = 0;
+          moves = 0;
         }
         break;
       case 3:
-        loc.y -= numberOfMoves;
-        moved++;
-        if(moved === numberOfMoves){
+        loc.y -= chance;
+        moves++;
+        if(moves === moveTotal){
           lastDir = 0;
-          moved = 0;
-          numberOfMoves++;
+          moves = 0;
+          moveTotal++;
         }
         break;
       default:
