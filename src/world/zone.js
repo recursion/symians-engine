@@ -90,10 +90,10 @@ export default class Zone {
   }
 
   /**
-   * prepare locations for json transport
+   * prettify zone locations
    * @returns {Array} of prettified locations
    */
-  jsonPrepLocations(){
+  prettifyLocations(){
     return this.locations.map((loc)=>{
       return loc.prettify();
     });
