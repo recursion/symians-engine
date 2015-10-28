@@ -17,7 +17,7 @@ export default class GObj {
    * @param {Number} y - the y coordinate
    * @param {EventEmitter} the simulations event emitter
    */
-  constructor(x=0, y=0, emitter){
+  constructor(x=0, y=0, emitter, age = 0, size = 0, blocks = true){
     if (!emitter || !emitter instanceof EventEmitter){
       throw new Error('emitter must be an instance of eventemitter3!');
     }
@@ -25,9 +25,9 @@ export default class GObj {
     const privs = {
       id: gobjID++,
       position: new Position(x, y),
-      age: 0,
-      size: new Trait(0),
-      blocks: true,
+      age: age,
+      size: new Trait(size),
+      blocks: blocks,
       emitter: emitter
     };
     privateMembers.set(this, privs);
@@ -127,4 +127,3 @@ export default class GObj {
     return `${this.constructor.name} {x: ${this.position.x}, y: ${this.position.y}, age: ${this.age}}`;
   }
 }
-

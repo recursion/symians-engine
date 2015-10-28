@@ -4,9 +4,6 @@ import Growable from '../behaviors/growable'
 
 const privateMembers = new WeakMap();
 
-let goCount = 0;
-let noGoCount = 0;
-
 /**
  * basic living/growing/edible grass
  */
@@ -24,6 +21,11 @@ export default class Grass extends GObj {
       growable: new Growable(this.trait('size'), genGrowthRate())
     };
     privateMembers.set(this, privs);
+  }
+
+  // grass doesnt block man!
+  get blocks(){
+    return false;
   }
 
   /**

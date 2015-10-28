@@ -18,6 +18,11 @@ export default class Location extends GObj {
   }
 
   /**
+   * override and do nothing
+   */
+  update(){}
+
+  /**
    * @returns {Boolean}
    * true if the location is blocked
    * false if the location is open
@@ -34,10 +39,12 @@ export default class Location extends GObj {
    * the list of items on/at this location
    */
   get contents(){
-    const contents = privates.get(this).contents;
-    return contents.slice();
+    return privates.get(this).contents.slice();
   }
 
+  /**
+   * @returns {String} - the type of location
+   */
   get type(){
     return privates.get(this).type;
   }
@@ -58,7 +65,6 @@ export default class Location extends GObj {
 
     privates.get(this).contents.push(obj);
     return true;
-    // emit an event ?
   }
 
   /**
@@ -76,19 +82,14 @@ export default class Location extends GObj {
       }
       return privates.get(this).contents.splice(idx, 1)[0];
     }
-}
+  }
 
-/**
- * returns an object ready to be json stringified
- */
+  /**
+   * returns an object ready to be json stringified
+   */
   prettify(){
-    let contents = [];
-    this.contents.forEach((o)=>{
-      if(o.prettify){
-        contents.push(o.prettify());
-      } else {
-        console.log('found: ', o);
-      }
+    const contents = this.contents.map((o)=>{
+      return o.prettify();
     });
 
     return {
@@ -100,9 +101,16 @@ export default class Location extends GObj {
     };
   }
 
-/**
- * returns a json string representing the object
- */
+  /**
+   * returns a prettified string representing the object
+   */
+  toString(){
+    return this.prettify().toString();
+  }
+
+  /**
+   * returns a json string representing the object
+   */
   toJSON(){
     return JSON.stringify(this.prettify());
   }
