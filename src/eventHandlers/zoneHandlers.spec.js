@@ -1,7 +1,7 @@
 import sinon from 'sinon'
 import {expect} from 'chai'
 import winston from 'winston'
-import * as EHM from './handlers'
+import * as EHM from './zoneHandlers'
 import eventEmitter from 'eventemitter3'
 
 const app = {

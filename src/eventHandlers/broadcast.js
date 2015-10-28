@@ -15,7 +15,6 @@ let lastBroadcast = 0;
  * @param {EventEmitter3} emitter - the system event emitter
  */
 export function registerHandlers(emitter){
-  emitter.on('zoneCreated', publishZone);
   emitter.on('create', create);
   emitter.on('change', change);
 }
@@ -37,20 +36,6 @@ function broadcast(type, obj){
     updates = [];
     lastBroadcast = Date.now();
   }
-}
-
-/**
- * handler for the zoneCreated event
- * publishes the zone data to redis pub/sub
- * @param {Zone} - zone - a zone instance
- */
-function publishZone(zone){
-  client.publish('zoneCreated', JSON.stringify({
-      width: zone.width,
-      height: zone.height,
-      locations: zone.jsonPrepLocations()
-    })
-  );
 }
 
 /**

@@ -1,5 +1,9 @@
-//import Promise from 'bluebird'
+import Promise from 'bluebird'
 //import winston from 'winston'
+import redis from 'redis'
+
+const client = redis.createClient();
+Promise.promisifyAll(redis.RedisClient.prototype);
 
 export const dirNames = ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'];
 export const directions = {
@@ -18,6 +22,7 @@ export const directions = {
  * @param {EventEmitter3} emitter - the system event emitter
  */
 export function registerHandlers(emitter, app){
+  emitter.on('zoneCreated', publishZone);
   emitter.on('selectRandomNearbyLocation', selectRandomNearbyLocation);
 
   /**
@@ -28,21 +33,31 @@ export function registerHandlers(emitter, app){
    */
   function selectRandomNearbyLocation(startLoc, range = 1, callback){
 
-
     let [x, y] = directions[dirNames[randy()]];
 
     x *= limitedRandy(range, 1);
     y *= limitedRandy(range, 1);
 
-
     x = startLoc.position.x + x;
     y = startLoc.position.y + y;
-
 
     const loc = app.zone.getLocation(x, y);
     callback(loc);
   }
+}
 
+/**
+ * handler for the zoneCreated event
+ * publishes the zone data to redis pub/sub
+ * @param {Zone} - zone - a zone instance
+ */
+function publishZone(zone){
+  client.publish('zoneCreated', JSON.stringify({
+      width: zone.width,
+      height: zone.height,
+      locations: zone.jsonPrepLocations()
+    })
+  );
 }
 
 function limitedRandy(max, min){

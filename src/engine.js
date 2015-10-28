@@ -2,10 +2,9 @@
 import winston from 'winston'
 import EventEmitter from 'eventEmitter3'
 
-import * as EventHandlers from './handlers'
-import * as Broadcast from './broadcast'
+import * as ZoneEventHandlers from './eventHandlers/zoneHandlers'
+import * as Broadcast from './eventHandlers/broadcast'
 
-//import {loader} from 'symians-models'
 import Squirrel from './mobs/squirrel'
 import Grass from './plants/grass'
 import Tree from './plants/tree'
@@ -80,7 +79,7 @@ export default class Engine{
     };
 
     Broadcast.registerHandlers(this.emitter, this);
-    EventHandlers.registerHandlers(this.emitter, this);
+    ZoneEventHandlers.registerHandlers(this.emitter, this);
 
     // keep a reference to the game loop
     this.loop = null;
