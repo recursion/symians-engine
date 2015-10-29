@@ -60,16 +60,23 @@ export default class GObj {
     return privateMembers.get(this).blocks;
   }
 
+  /**
+   * returns an actual trait object so that subclasses can access it
+   * @param {String} t - the name of the trait you want to access
+   * @returns {Trait} - a trait object
+   */
   trait(t){
     return privateMembers.get(this)[t];
   }
 
+  /**
+   * @returns {EventEmitter3} - the event emitter
   get emitter(){
     return privateMembers.get(this).emitter;
   }
 
   /**
-   * returns the plants current size
+   * @returns {Number} the plants current size
    */
   get size(){
     return privateMembers.get(this).size.value;

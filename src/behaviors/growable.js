@@ -1,8 +1,10 @@
-import Trait from '../core/trait'
+//import Trait from '../core/trait'
 
 //import winston from 'winston'
-const SIZE = Symbol('size');
+//const SIZE = Symbol('size');
 const GROWTHRATE = Symbol('growthrate');
+const STATE = Symbol('state');
+const PARENT = Symbol('parent');
 
 /**
  * basic living/growing/edible grass
@@ -14,13 +16,11 @@ export default class Growable {
    * @param {Number} growthRate - the rate at which the plant will grow
    * - the higher the number the slower the growth.
    */
-  constructor(size, growthRate=genRandomGrowthRate()){
-    if(!(size instanceof Trait)){
-      throw new Error('Growable requires parameter size to be instance of Trait');
-    }
+  constructor(baseObject, growthRateRange=[2, 1]){
+    this[PARENT] = baseObject;
+    this[STATE] = new GrowingState(this);
+    this[GROWTHRATE] = genRandomGrowthRate(growthRateRange);
 
-    this[SIZE] = size;
-    this[GROWTHRATE] = growthRate;
   }
 
   /**
@@ -31,16 +31,87 @@ export default class Growable {
    * @returns {Boolean} - whether or not we grew
    */
   grow(time){
-    if(time % this[GROWTHRATE] === 0 && this[SIZE].value < 16){
-      this[SIZE].value++;
+    return this[STATE].grow(time);
+  }
+
+  get parent(){
+    return this[PARENT];
+  }
+
+  get state(){
+    return this[STATE].constructor.name;
+  }
+
+  set state(state){
+    this[STATE] = state;
+  }
+}
+
+/**
+ * returns a number between range[0] and range[1]
+ */
+function genRandomGrowthRate(range){
+  return Math.floor(Math.random() * (range[0] - range[1]) + range[1]);
+}
+
+/**
+ * state for active growth
+ */
+class GrowingState {
+
+  constructor(stateManager){
+    this.stateManager = stateManager;
+  }
+
+  grow(time){
+    if(this.stateManager.parent.age > 100 && this.stateManager.parent.size > 8 &&  time % 100 === 0){
+      this.stateManager.state = new SpawningState(this.stateManager);
+      return true;
+    }
+
+    if(this.stateManager[PARENT].size === 15){
+      this.stateManager.state = new DyingState(this.stateManager);
+      return true;
+    }
+
+    if(time % this.stateManager[GROWTHRATE] === 0 && this.stateManager.parent.size < 16){
+      this.stateManager.parent.trait('size').value++;
       return true;
     }
     return false;
   }
 }
-/**
- * returns a number between 2 an 5
- */
-function genRandomGrowthRate(){
-  return Math.floor(Math.random() * (100 - 20) + 20);
+
+class SpawningState {
+  constructor(stateManager){
+    this.stateManager = stateManager;
+  }
+
+  grow(time){
+    // pick a random nearby spot
+    this.stateManager.parent.emit('selectRandomNearbyLocation', this, 2, (loc)=>{
+      if(loc && !loc.isBlocked){
+        loc.add(new Grass(loc.position.x, loc.position.y, this.emitter));
+        this.stateManager[STATE] = new GrowingState(this.stateManager);
+      }
+    });
+  }
+}
+
+class DyingState {
+  constructor(stateManager){
+    this.stateManager = stateManager;
+  }
+
+  grow(time){
+    // if older than 1000 ticks and ..
+    if(this.stateManager.parent.age > 100 && this.stateManager.parent.size > 8 &&  time % 100 === 0){
+      // pick a random nearby spot
+      this.stateManager.parent.emit('selectRandomNearbyLocation', this, 2, (loc)=>{
+        if(loc && !loc.isBlocked){
+          loc.add(new Grass(loc.position.x, loc.position.y, this.emitter));
+        }
+      });
+    }
+  }
 }

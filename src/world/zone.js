@@ -108,8 +108,11 @@ export default class Zone {
    */
   createCluster(item, loc, size){
 
-    /* how closely together items get placed */
-    const distribution = 0.7;
+    /**
+     * how closely together items get placed
+     * smaller number = tighter clusters
+     */
+    const distribution = 0.75;
 
     let itemName;
     let itemsPlaced = 0;
@@ -128,13 +131,15 @@ export default class Zone {
           let newItem = new item(loc.x, loc.y, privates.get(this).emitter);
           itemName = newItem.constructor.name;
 
-          let chance = Math.random();
-          if (chance > distribution){
-            if(location.add(newItem) ){
+          if (Math.random() > distribution){
+            /**
+             * as long as there is nothing already on this tile
+             * and we are able to add this object to the location
+             * increment placed items counter
+             */
+            if(!location.contents.length && location.add(newItem) ){
               itemsPlaced++;
             }
-          } else {
-            loc = finder(loc);
           }
         }
       }

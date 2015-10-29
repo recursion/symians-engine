@@ -1,7 +1,5 @@
 import GObj from '../core/gobj'
 //import winston from 'winston'
-import Direction from './direction'
-import Trait from '../core/trait'
 import Growable from '../behaviors/growable'
 
 const privateMembers = new WeakMap();
@@ -20,18 +18,22 @@ export default class Squirrel extends GObj {
   constructor(...args){
     super(...args);
     const privs = {
-      growable: new Growable(this.trait('size'))
+      growable: new Growable(this, [100, 50])
     };
     privateMembers.set(this, privs);
   }
 
   update(time){
+    super.update(time);
+
+    let changed = false;
     if(privateMembers.get(this).growable.grow(time)){
-      this.emit('grow', this);
+      changed = true;
     }
-    // check health
-    // check hunger
-    // check fatigue
+
+    if(changed){
+      this.emit('change', this);
+    }
   }
 
 }

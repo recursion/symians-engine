@@ -20,7 +20,7 @@ export default class Tree extends GObj {
     super(...args);
     const privs = {
       blocks: true,
-      growable: new Growable(this.trait('size'), genGrowthRate())
+      growable: new Growable(this, [200, 100])
     };
     privateMembers.set(this, privs);
   }
@@ -36,26 +36,9 @@ export default class Tree extends GObj {
       changed = true;
     }
 
-    // if older than 1000 ticks and ..
-    if(this.age > 100 && this.size > 8 && time % 100 === 0){
-      // pick a random nearby spot
-      this.emit('selectRandomNearbyLocation', this, 2, (loc)=>{
-        if(loc && !loc.isBlocked){
-          loc.add(new Tree(loc.position.x, loc.position.y, this.emitter));
-        }
-      });
-    }
-
     if(changed){
       this.emit('change', this);
     }
   }
 
-}
-
-/**
- * returns a random number between 99 an 20
- */
-function genGrowthRate(){
-  return Math.floor(Math.random() * (100 - 20) + 20);
 }
