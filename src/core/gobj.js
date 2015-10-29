@@ -17,38 +17,43 @@ export default class GObj {
    * @param {Number} y - the y coordinate
    * @param {EventEmitter} the simulations event emitter
    */
-  constructor(x=0, y=0, emitter, age = 0, size = 0, blocks = true){
+  constructor(x=0, y=0, zone, emitter, size = 0, blocks = true){
     if (!emitter || !emitter instanceof EventEmitter){
       throw new Error('emitter must be an instance of eventemitter3!');
     }
 
     const privs = {
       id: gobjID++,
+      parent: zone,
       position: new Position(x, y),
-      age: age,
       size: new Trait(size),
       blocks: blocks,
+      created: Date.now(),
       emitter: emitter
     };
     privateMembers.set(this, privs);
 
     emitter.on('heartbeat', this.update.bind(this));
 
-    /**
-     * Emit a creation event
-     * (except for locations)
-     **/
-    if(this.constructor.name !== 'Location'){
-      emitter.emit('create', this.constructor.name, this);
-    }
   }
 
   get id(){
     return privateMembers.get(this).id;
   }
 
-  get emitter(){
-    return privateMembers.get(this).emitter;
+  /**
+   * gametime this object was created on
+   */
+  get created(){
+    return privateMembers.get(this).created;
+  }
+
+  get age(){
+    return Math.floor((Date.now() - this.created) / 100);
+  }
+
+  get parent(){
+    return privateMembers.get(this).parent;
   }
 
   /**
@@ -75,6 +80,7 @@ export default class GObj {
 
   /**
    * @returns {EventEmitter3} - the event emitter
+   */
   get emitter(){
     return privateMembers.get(this).emitter;
   }
@@ -98,11 +104,6 @@ export default class GObj {
     emitter.emit(...args);
   }
 
-  get age(){
-    const age = privateMembers.get(this).age;
-    return age;
-  }
-
   /**
    * called on engine heartbeat
    * @param {Number} - The simulation world time
@@ -117,6 +118,7 @@ export default class GObj {
   prettify(){
     return {
       id: this.id,
+      created: this.created,
       age: this.age,
       type: this.constructor.name,
       x: this.position.x,

@@ -3,6 +3,18 @@ import winston from 'winston'
 
 const privates = new WeakMap();
 
+export const dirNames = ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'];
+export const directions = {
+  n: [0, -1],
+  ne: [1, -1],
+  e: [1, 0],
+  se: [1, 1],
+  s: [0, 1],
+  sw: [-1, 1],
+  w: [-1, 0],
+  nw: [-1, -1]
+};
+
 /**
  * A zone is the largest chunk of a world that
  * can be 'subscribed' to at a time. It is very
@@ -25,6 +37,8 @@ export default class Zone {
     this.width = width;
     this.height = height;
     this.locations = [];
+    this.time = 0;
+
   }
 
   /**
@@ -52,11 +66,34 @@ export default class Zone {
   createMap(type='grass'){
     for (let col = 0; col < this.width; col++){
       for (let row = 0; row < this.height; row++){
-        let loc = new Location(type, col, row, privates.get(this).emitter);
+        let loc = new Location(type, col, row, this, privates.get(this).emitter);
         this.locations.push(loc);
       }
     }
     winston.info(`Created map with: ${this.width * this.height} locations.`);
+  }
+
+  /**
+   * select a random location within Range tiles from obj's current location
+   * @param {Point} startLoc - the location to start from
+   * @param {Number} range - the amount of tiles to go from center
+   * @param {Function} callback - function to call once location is found
+   */
+  selectRandomNearbyLocation(startLoc, range = 1){
+
+    // get a random vector
+    let [x, y] = directions[dirNames[randy(dirNames.length, 0)]];
+
+    // randomly add small multipliers to x and y
+    x *= randy(range, 1);
+    y *= randy(range, 1);
+
+    // apply the vector to the start location
+    x = startLoc.position.x + x;
+    y = startLoc.position.y + y;
+
+    // get the new location
+    return this.getLocation(x, y);
   }
 
   /**
@@ -128,7 +165,7 @@ export default class Zone {
         // if we are able to place the item
         if (!location.isBlocked){
           // get the constructor name of the item we are making
-          let newItem = new item(loc.x, loc.y, privates.get(this).emitter);
+          let newItem = new item(loc.x, loc.y, this, privates.get(this).emitter);
           itemName = newItem.constructor.name;
 
           if (Math.random() > distribution){
@@ -185,10 +222,10 @@ function findNextLoc(){
   return (location)=>{
     // make a copy of the object passed in
     let loc = Object.assign({}, location);
-    let chance = Math.floor(Math.random() * (3 - 1) + 1);
+    let rangeMultiplier = Math.floor(Math.random() * (3 - 1) + 1);
     switch(lastDir){
       case 0:
-        loc.x += chance;
+        loc.x += rangeMultiplier;
         moves++;
         if(moves === moveTotal){
           lastDir++;
@@ -196,7 +233,7 @@ function findNextLoc(){
         }
         break;
       case 1:
-        loc.y += chance;
+        loc.y += rangeMultiplier;
         moves++;
         if(moves === moveTotal){
           lastDir++;
@@ -205,7 +242,7 @@ function findNextLoc(){
         }
         break;
       case 2:
-        loc.x -= chance;
+        loc.x -= rangeMultiplier;
         moves++;
         if(moves === moveTotal){
           lastDir++;
@@ -213,7 +250,7 @@ function findNextLoc(){
         }
         break;
       case 3:
-        loc.y -= chance;
+        loc.y -= rangeMultiplier;
         moves++;
         if(moves === moveTotal){
           lastDir = 0;
@@ -228,3 +265,5 @@ function findNextLoc(){
     return loc;
   }
 }
+
+

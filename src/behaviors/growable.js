@@ -16,11 +16,20 @@ export default class Growable {
    * @param {Number} growthRate - the rate at which the plant will grow
    * - the higher the number the slower the growth.
    */
-  constructor(baseObject, growthRateRange=[2, 1]){
+  constructor(baseObject, growthRateRange=[2, 1], spawnRate = 100){
     this[PARENT] = baseObject;
     this[STATE] = new GrowingState(this);
     this[GROWTHRATE] = genRandomGrowthRate(growthRateRange);
+    this.spawnRate = spawnRate;
+    this.maxSize = 16;
+  }
 
+  get growthRate(){
+    return this[GROWTHRATE];
+  }
+
+  get parent(){
+    return this[PARENT];
   }
 
   /**
@@ -34,10 +43,6 @@ export default class Growable {
     return this[STATE].grow(time);
   }
 
-  get parent(){
-    return this[PARENT];
-  }
-
   get state(){
     return this[STATE].constructor.name;
   }
@@ -47,12 +52,6 @@ export default class Growable {
   }
 }
 
-/**
- * returns a number between range[0] and range[1]
- */
-function genRandomGrowthRate(range){
-  return Math.floor(Math.random() * (range[0] - range[1]) + range[1]);
-}
 
 /**
  * state for active growth
@@ -61,22 +60,25 @@ class GrowingState {
 
   constructor(stateManager){
     this.stateManager = stateManager;
+    this.lastGrew = 0;
   }
 
   grow(time){
-    if(this.stateManager.parent.age > 100 && this.stateManager.parent.size > 8 &&  time % 100 === 0){
+    const target = this.stateManager.parent;
+    if(target.age > 10 && target.size > 4 &&  time % 10 === 0){
       this.stateManager.state = new SpawningState(this.stateManager);
       return true;
     }
 
-    if(this.stateManager[PARENT].size === 115){
+    if(target.size === 115){
       this.stateManager.state = new DyingState(this.stateManager);
       return true;
     }
 
-    if(time % this.stateManager[GROWTHRATE] === 0 && this.stateManager.parent.size < 16){
-      this.stateManager.parent.trait('size').value++;
-      return true;
+    if(time - this.lastGrew > this.stateManager.growthRate && target.size < this.stateManager.maxSize){
+      target.trait('size').value++;
+      this.lastGrew = time;
+      return false;
     }
     return false;
   }
@@ -85,17 +87,36 @@ class GrowingState {
 class SpawningState {
   constructor(stateManager){
     this.stateManager = stateManager;
+    this.lastSpawn = 0;
   }
 
   grow(time){
-    // pick a random nearby spot
-    this.stateManager.parent.emit('selectRandomNearbyLocation', this.stateManager.parent, 2, (loc)=>{
+    const target = this.stateManager.parent;
+
+    if (spawnFilter(this, time)){
+      // pick a random nearby spot
+      let loc = target.parent.selectRandomNearbyLocation(target, 2);
+
       if(loc && !loc.isBlocked){
-        loc.add(new this.stateManager.parent.constructor(loc.position.x, loc.position.y, this.stateManager.parent.emitter));
-        this.stateManager[STATE] = new GrowingState(this.stateManager);
+        loc.add(new target.constructor(
+              loc.position.x,
+              loc.position.y,
+              target.parent,
+              target.emitter
+        ));
+        this.stateManager.state = new GrowingState(this.stateManager);
+        this.lastSpawn = time;
+        return true;
       }
-    });
+    } else {
+      this.stateManager.state = new GrowingState(this.stateManager);
+      return false;
+    }
   }
+}
+
+function spawnFilter(spawnable, time){
+  return time - spawnable.lastSpawn > spawnable.stateManager.spawnRate;
 }
 
 class DyingState {
@@ -104,14 +125,12 @@ class DyingState {
   }
 
   grow(time){
-    // if older than 1000 ticks and ..
-    if(this.stateManager.parent.age > 100 && this.stateManager.parent.size > 8 &&  time % 100 === 0){
-      // pick a random nearby spot
-      this.stateManager.parent.emit('selectRandomNearbyLocation', this, 2, (loc)=>{
-        if(loc && !loc.isBlocked){
-          loc.add(new Grass(loc.position.x, loc.position.y, this.emitter));
-        }
-      });
-    }
   }
+}
+
+/**
+ * returns a number between range[0] and range[1]
+ */
+function genRandomGrowthRate(range){
+  return Math.floor(Math.random() * (range[0] - range[1]) + range[1]);
 }

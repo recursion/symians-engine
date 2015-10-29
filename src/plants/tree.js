@@ -5,6 +5,9 @@ import Growable from '../behaviors/growable'
 
 const privateMembers = new WeakMap();
 
+const SPAWNRATE = 500;
+const GROWTHRATE = [20, 10];
+
 /**
  * basic living/growing/edible grass
  */
@@ -20,9 +23,10 @@ export default class Tree extends GObj {
     super(...args);
     const privs = {
       blocks: true,
-      growable: new Growable(this, [200, 100])
+      growable: new Growable(this, GROWTHRATE, SPAWNRATE)
     };
     privateMembers.set(this, privs);
+    this.emit('create', this.constructor.name, this);
   }
 
   /**
@@ -41,4 +45,10 @@ export default class Tree extends GObj {
     }
   }
 
+  prettify(){
+    let o = super.prettify();
+    o.state = privateMembers.get(this).growable.state;
+    o.growthRate = privateMembers.get(this).growable.growthRate;
+    return o;
+  }
 }

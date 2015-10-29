@@ -113,6 +113,7 @@ export default class Engine{
         winston.info('Populating map!');
         this.zone.populateMap(worldGenOptions);
       }
+      this.zone.time = this.tick;
 
       /*
       if(this.tick % 100 === 0){

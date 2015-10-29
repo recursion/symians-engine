@@ -1,26 +1,58 @@
-import GObj from '../core/gobj'
+import Position from '../core/position'
+import EventEmitter from 'eventemitter3'
 
-const privates = new WeakMap();
+const privateMembers = new WeakMap();
 
 /**
  * A location is the smallest map unit. Locations are containers for all other objects in the game. A 'tile' if you will. A game object must always be within/at a location.
  *type=Location.types.GRASS, x=0, y=0, zone={}, emitter
  */
-export default class Location extends GObj {
-  constructor(type, ...rest){
-    super(...rest);
+export default class Location {
+  constructor(type, x, y, zone, emitter){
     const priv = {
       blocked: false,
       type: type,
+      parent: zone,
+      position: new Position(x, y),
+      emitter: emitter,
       contents: []
     };
-    privates.set(this, priv);
+    privateMembers.set(this, priv);
+    emitter.on('heartbeat', this.update.bind(this));
   }
 
+  get parent(){
+    return privateMembers.get(this).parent;
+  }
+
+  get emitter(){
+    return privateMembers.get(this).emitter;
+  }
+
+  /**
+   * returns an object with the position.x and position.y property
+   * @returns {Position}
+   */
+  get position(){
+    let position = privateMembers.get(this).position;
+    return {x: position.x, y: position.y};
+  }
   /**
    * override and do nothing
    */
   update(){}
+
+  /* wrap event emitter on */
+  on(...args){
+    let emitter = privateMembers.get(this).emitter;
+    emitter.on(...args);
+  }
+
+  /* wrap event emitter emit */
+  emit(...args){
+    let emitter = privateMembers.get(this).emitter;
+    emitter.emit(...args);
+  }
 
   /**
    * @returns {Boolean}
@@ -30,7 +62,7 @@ export default class Location extends GObj {
   get isBlocked(){
     // check the object at the top of the
     // contents stack and see if it blocks
-    const blocked = privates.get(this).blocked;
+    const blocked = privateMembers.get(this).blocked;
     return blocked;
   }
 
@@ -39,14 +71,14 @@ export default class Location extends GObj {
    * the list of items on/at this location
    */
   get contents(){
-    return privates.get(this).contents.slice();
+    return privateMembers.get(this).contents.slice();
   }
 
   /**
    * @returns {String} - the type of location
    */
   get type(){
-    return privates.get(this).type;
+    return privateMembers.get(this).type;
   }
 
   /**
@@ -60,10 +92,10 @@ export default class Location extends GObj {
     }
 
     if(obj.blocks){
-      privates.get(this).blocked = true;
+      privateMembers.get(this).blocked = true;
     }
 
-    privates.get(this).contents.push(obj);
+    privateMembers.get(this).contents.push(obj);
     return true;
   }
 
@@ -72,15 +104,15 @@ export default class Location extends GObj {
    * @return {GObj}
    */
   remove(obj){
-    const idx = privates.get(this).contents.indexOf(obj);
+    const idx = privateMembers.get(this).contents.indexOf(obj);
     if (idx === -1){
       return null;
     }
     else {
       if(obj.blocks){
-        privates.get(this).blocked = false;
+        privateMembers.get(this).blocked = false;
       }
-      return privates.get(this).contents.splice(idx, 1)[0];
+      return privateMembers.get(this).contents.splice(idx, 1)[0];
     }
   }
 
@@ -95,7 +127,7 @@ export default class Location extends GObj {
     return {
       x: this.position.x,
       y: this.position.y,
-      type: privates.get(this).type,
+      type: privateMembers.get(this).type,
       isBlocked: this.isBlocked,
       contents: contents
     };

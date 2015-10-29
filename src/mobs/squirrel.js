@@ -21,6 +21,7 @@ export default class Squirrel extends GObj {
       growable: new Growable(this, [100, 50])
     };
     privateMembers.set(this, privs);
+    this.emit('create', this.constructor.name, this);
   }
 
   update(time){
@@ -36,4 +37,9 @@ export default class Squirrel extends GObj {
     }
   }
 
+  prettify(){
+    let o = super.prettify();
+    o.state = privateMembers.get(this).growable.state;
+    return o;
+  }
 }

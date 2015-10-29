@@ -2,7 +2,7 @@ import Promise from 'bluebird'
 import winston from 'winston'
 import redis from 'redis'
 
-const broadcastInterval = 500;
+const broadcastInterval = 250;
 
 const client = redis.createClient();
 Promise.promisifyAll(redis.RedisClient.prototype);
