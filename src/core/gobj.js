@@ -47,6 +47,10 @@ export default class GObj {
     return privateMembers.get(this).id;
   }
 
+  get emitter(){
+    return privateMembers.get(this).emitter;
+  }
+
   /**
    * returns an object with the position.x and position.y property
    * @returns {Position}

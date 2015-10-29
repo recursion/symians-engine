@@ -69,7 +69,7 @@ class GrowingState {
       return true;
     }
 
-    if(this.stateManager[PARENT].size === 15){
+    if(this.stateManager[PARENT].size === 115){
       this.stateManager.state = new DyingState(this.stateManager);
       return true;
     }
@@ -89,9 +89,9 @@ class SpawningState {
 
   grow(time){
     // pick a random nearby spot
-    this.stateManager.parent.emit('selectRandomNearbyLocation', this, 2, (loc)=>{
+    this.stateManager.parent.emit('selectRandomNearbyLocation', this.stateManager.parent, 2, (loc)=>{
       if(loc && !loc.isBlocked){
-        loc.add(new Grass(loc.position.x, loc.position.y, this.emitter));
+        loc.add(new this.stateManager.parent.constructor(loc.position.x, loc.position.y, this.stateManager.parent.emitter));
         this.stateManager[STATE] = new GrowingState(this.stateManager);
       }
     });
