@@ -16,12 +16,12 @@ export default class Growable {
    * @param {Number} growthRate - the rate at which the plant will grow
    * - the higher the number the slower the growth.
    */
-  constructor(baseObject, growthRateRange=[2, 1], spawnRate = 100){
+  constructor(baseObject, growthRateRange=[2, 1], spawnRate = 100, maxSize=16){
     this[PARENT] = baseObject;
     this[STATE] = new GrowingState(this);
     this[GROWTHRATE] = genRandomGrowthRate(growthRateRange);
     this.spawnRate = spawnRate;
-    this.maxSize = 16;
+    this.maxSize = maxSize;
   }
 
   get growthRate(){
@@ -39,8 +39,8 @@ export default class Growable {
    * @param {Number} time - sim time
    * @returns {Boolean} - whether or not we grew
    */
-  grow(time){
-    return this[STATE].grow(time);
+  update(time){
+    return this[STATE].update(time);
   }
 
   get state(){
@@ -63,7 +63,7 @@ class GrowingState {
     this.lastGrew = 0;
   }
 
-  grow(time){
+  update(time){
     const target = this.stateManager.parent;
     if(target.age > 10 && target.size > 4 &&  time % 10 === 0){
       this.stateManager.state = new SpawningState(this.stateManager);
@@ -90,7 +90,7 @@ class SpawningState {
     this.lastSpawn = 0;
   }
 
-  grow(time){
+  update(time){
     const target = this.stateManager.parent;
 
     if (spawnFilter(this, time)){
@@ -98,14 +98,17 @@ class SpawningState {
       let loc = target.parent.selectRandomNearbyLocation(target, 2);
 
       if(loc && !loc.isBlocked){
-        loc.add(new target.constructor(
-              loc.position.x,
-              loc.position.y,
-              target.parent,
-              target.emitter
+        loc.add(
+          new target.constructor(
+            loc.position.x,
+            loc.position.y,
+            target.parent,
+            target.emitter
         ));
+
         this.stateManager.state = new GrowingState(this.stateManager);
         this.lastSpawn = time;
+
         return true;
       }
     } else {
@@ -124,7 +127,7 @@ class DyingState {
     this.stateManager = stateManager;
   }
 
-  grow(time){
+  update(time){
   }
 }
 

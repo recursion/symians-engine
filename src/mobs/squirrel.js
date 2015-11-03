@@ -28,7 +28,7 @@ export default class Squirrel extends GObj {
     super.update(time);
 
     let changed = false;
-    if(privateMembers.get(this).growable.grow(time)){
+    if(privateMembers.get(this).growable.update(time)){
       changed = true;
     }
 
